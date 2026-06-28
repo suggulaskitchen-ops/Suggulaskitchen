@@ -5,8 +5,14 @@ let baseURL = envBase?.trim() || ''
 
 if (import.meta.env.PROD && !baseURL) {
   console.error(
-    '[API] Missing VITE_API_BASE_URL in production build. API requests will use relative URLs and fail on GitHub Pages.'
+    '[API] Missing VITE_API_BASE_URL in production build. Mutations will be blocked until a backend URL is configured.'
   )
+}
+
+function assertBackendConfigured() {
+  if (!apiClient.defaults.baseURL) {
+    throw new Error('Backend is not configured for this build. Set VITE_API_BASE_URL to your backend API URL, including /api.')
+  }
 }
 
 // Only use the local backend during development (don't bake into production builds).
@@ -59,6 +65,7 @@ export async function fetchBusinessInfo() {
 }
 
 export async function updateBusinessInfo(payload) {
+  assertBackendConfigured()
   const response = await apiClient.put('/business', payload)
   return response.data
 }
@@ -73,16 +80,19 @@ export async function fetchCategories() {
 }
 
 export async function createCategory(payload) {
+  assertBackendConfigured()
   const response = await apiClient.post('/categories', payload)
   return response.data
 }
 
 export async function updateCategory(id, payload) {
+  assertBackendConfigured()
   const response = await apiClient.put(`/categories/${id}`, payload)
   return response.data
 }
 
 export async function deleteCategory(id) {
+  assertBackendConfigured()
   const response = await apiClient.delete(`/categories/${id}`)
   return response.data
 }
@@ -97,16 +107,19 @@ export async function fetchProducts() {
 }
 
 export async function createProduct(payload) {
+  assertBackendConfigured()
   const response = await apiClient.post('/products', payload)
   return response.data
 }
 
 export async function updateProduct(id, payload) {
+  assertBackendConfigured()
   const response = await apiClient.put(`/products/${id}`, payload)
   return response.data
 }
 
 export async function deleteProduct(id) {
+  assertBackendConfigured()
   const response = await apiClient.delete(`/products/${id}`)
   return response.data
 }
@@ -121,16 +134,19 @@ export async function fetchGalleryItems() {
 }
 
 export async function createGalleryItem(payload) {
+  assertBackendConfigured()
   const response = await apiClient.post('/gallery', payload)
   return response.data
 }
 
 export async function updateGalleryItem(id, payload) {
+  assertBackendConfigured()
   const response = await apiClient.put(`/gallery/${id}`, payload)
   return response.data
 }
 
 export async function deleteGalleryItem(id) {
+  assertBackendConfigured()
   const response = await apiClient.delete(`/gallery/${id}`)
   return response.data
 }
@@ -145,16 +161,19 @@ export async function fetchTestimonials() {
 }
 
 export async function createTestimonial(payload) {
+  assertBackendConfigured()
   const response = await apiClient.post('/testimonials', payload)
   return response.data
 }
 
 export async function updateTestimonial(id, payload) {
+  assertBackendConfigured()
   const response = await apiClient.put(`/testimonials/${id}`, payload)
   return response.data
 }
 
 export async function deleteTestimonial(id) {
+  assertBackendConfigured()
   const response = await apiClient.delete(`/testimonials/${id}`)
   return response.data
 }
