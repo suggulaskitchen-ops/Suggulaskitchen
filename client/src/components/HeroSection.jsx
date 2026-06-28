@@ -1,6 +1,21 @@
+import { useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 function HeroSection({ businessInfo }) {
+  const navigate = useNavigate()
   const heroImageUrl = `${import.meta.env.BASE_URL}images/hero.svg`
   const categoryImageUrl = `${import.meta.env.BASE_URL}images/category.svg`
+
+  const goToProducts = useCallback((e) => {
+    if (e && e.preventDefault) e.preventDefault()
+    // Navigate to the customer page (HashRouter will update the URL to #/customer)
+    navigate('/customer')
+    // Wait a short moment for the page to render, then scroll to the products section
+    setTimeout(() => {
+      const el = document.getElementById('products')
+      if (el) el.scrollIntoView({ behavior: 'smooth' })
+    }, 80)
+  }, [navigate])
 
   return (
     <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-emerald-600 via-slate-900 to-slate-700 px-6 py-16 text-white shadow-2xl shadow-slate-900/20 sm:px-10">
@@ -17,9 +32,9 @@ function HeroSection({ businessInfo }) {
             {businessInfo.description || 'Fresh homemade meals handcrafted with love and delivered ready to enjoy.'}
           </p>
           <div className="flex flex-col gap-4 sm:flex-row">
-            <a href="#products" className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
+            <button onClick={goToProducts} className="inline-flex items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-slate-100">
               View Menu
-            </a>
+            </button>
             {businessInfo.phone && (
               <a href={`tel:${businessInfo.phone}`} className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/20">
                 Call Now
