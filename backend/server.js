@@ -36,5 +36,5 @@ app.use('/api', (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Backend server listening on http://localhost:${port}`)
+  console.log(`Backend server listening on port ${port}`)
 })

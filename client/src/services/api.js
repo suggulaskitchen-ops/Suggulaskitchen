@@ -1,10 +1,17 @@
 import axios from 'axios'
 
 const envBase = import.meta.env.VITE_API_BASE_URL
-let baseURL = envBase || ''
+let baseURL = envBase?.trim() || ''
 
-// If not configured and running locally, point to localhost API for development.
-if (!baseURL && typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+if (import.meta.env.PROD && !baseURL) {
+  console.error(
+    '[API] Missing VITE_API_BASE_URL in production build. API requests will use relative URLs and fail on GitHub Pages.'
+  )
+}
+
+// Only use the local backend during development (don't bake into production builds).
+// Vite sets `import.meta.env.DEV` to true when running in dev mode.
+if (!baseURL && typeof window !== 'undefined' && import.meta.env.DEV && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
   baseURL = 'http://localhost:4000/api'
 }
 
