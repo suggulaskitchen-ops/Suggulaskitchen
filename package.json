@@ -1,0 +1,39 @@
+{
+  "name": "homemade-food-management-system",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Full Stack Homemade Food Business Management System",
+  "author": "AI Software Architect",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "nodemon backend/server.js --watch backend --ext js,json",
+    "client": "vite",
+    "build": "npm run build:client",
+    "build:client": "vite build",
+    "preview": "vite preview",
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "framer-motion": "^11.0.0",
+    "lucide-react": "^0.373.0",
+    "multer": "^2.2.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.0",
+    "react-router-dom": "^6.16.0",
+    "react-toastify": "^11.1.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.4.0",
+    "autoprefixer": "^10.4.19",
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.1",
+    "postcss": "^8.4.40",
+    "tailwindcss": "^3.4.4",
+    "vite": "^5.4.1"
+  }
+}
