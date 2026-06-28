@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createGalleryItem, deleteGalleryItem, fetchGalleryItems, updateGalleryItem } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
+import ImagePicker from '../components/ImagePicker'
 
 const initialForm = {
   title: '',
@@ -108,10 +109,9 @@ function AdminGallery() {
           <span className="text-sm font-medium text-slate-200">Image Title</span>
           <input name="title" value={form.title} onChange={handleChange} required className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
         </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Image URL</span>
-          <input name="imageUrl" value={form.imageUrl} onChange={handleChange} required className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
+        <div className="space-y-2 lg:col-span-2">
+          <ImagePicker value={form.imageUrl} onChange={handleChange} />
+        </div>
         <label className="space-y-2 lg:col-span-2">
           <span className="text-sm font-medium text-slate-200">Description</span>
           <textarea name="description" value={form.description} onChange={handleChange} rows="3" className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />

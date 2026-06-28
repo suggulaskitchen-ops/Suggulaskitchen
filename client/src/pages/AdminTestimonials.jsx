@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createTestimonial, deleteTestimonial, fetchTestimonials, updateTestimonial } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
+import ImagePicker from '../components/ImagePicker'
 
 const initialForm = {
   customerName: '',
@@ -125,10 +126,9 @@ function AdminTestimonials() {
           <span className="text-sm font-medium text-slate-200">Rating</span>
           <input name="rating" type="number" min="1" max="5" value={form.rating} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
         </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Image URL</span>
-          <input name="imageUrl" value={form.imageUrl} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
+        <div className="space-y-2">
+          <ImagePicker value={form.imageUrl} onChange={handleChange} />
+        </div>
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-200">Display Order</span>
           <input name="displayOrder" type="number" value={form.displayOrder} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />

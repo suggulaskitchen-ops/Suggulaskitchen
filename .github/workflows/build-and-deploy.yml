@@ -30,8 +30,7 @@ jobs:
           # GITHUB_TOKEN is automatically provided in Actions; gh-pages will use it
         run: |
           if [ -z "$VITE_API_BASE_URL" ]; then
-            echo "ERROR: BACKEND_URL secret is not set. Set it to the backend API base URL, including /api."
-            exit 1
+            echo "WARNING: BACKEND_URL secret is not set. The site will still build and deploy, but admin mutations will be disabled until a backend URL is configured."
           fi
           npm run build
           npm run deploy
