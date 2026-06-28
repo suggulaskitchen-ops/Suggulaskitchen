@@ -1,28 +1,52 @@
 import axios from 'axios'
 
+const envBase = import.meta.env.VITE_API_BASE_URL
+let baseURL = envBase || ''
+
+// If not configured and running locally, point to localhost API for development.
+if (!baseURL && typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+  baseURL = 'http://localhost:4000/api'
+}
+
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:4000/api',
+  baseURL: baseURL || undefined,
   headers: {
     'Content-Type': 'application/json'
   }
 })
 
+const mockBase = import.meta.env.BASE_URL + 'mock/'
+
+async function fetchMock(path) {
+  const url = mockBase + path
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Mock data not found: ' + url)
+  return res.json()
+}
+
 export async function fetchAppData() {
+  if (!apiClient.defaults.baseURL) return fetchMock('data.json')
   const response = await apiClient.get('/data')
   return response.data
 }
 
 export async function fetchDashboardCounts() {
+  if (!apiClient.defaults.baseURL) return fetchMock('counts.json')
   const response = await apiClient.get('/data/counts')
   return response.data
 }
 
 export async function fetchFullData() {
+  if (!apiClient.defaults.baseURL) return fetchMock('data.json')
   const response = await apiClient.get('/data')
   return response.data
 }
 
 export async function fetchBusinessInfo() {
+  if (!apiClient.defaults.baseURL) {
+    const d = await fetchMock('data.json')
+    return d.business
+  }
   const response = await apiClient.get('/business')
   return response.data
 }
@@ -33,6 +57,10 @@ export async function updateBusinessInfo(payload) {
 }
 
 export async function fetchCategories() {
+  if (!apiClient.defaults.baseURL) {
+    const d = await fetchMock('data.json')
+    return d.categories
+  }
   const response = await apiClient.get('/categories')
   return response.data
 }
@@ -53,6 +81,10 @@ export async function deleteCategory(id) {
 }
 
 export async function fetchProducts() {
+  if (!apiClient.defaults.baseURL) {
+    const d = await fetchMock('data.json')
+    return d.products
+  }
   const response = await apiClient.get('/products')
   return response.data
 }
@@ -73,6 +105,10 @@ export async function deleteProduct(id) {
 }
 
 export async function fetchGalleryItems() {
+  if (!apiClient.defaults.baseURL) {
+    const d = await fetchMock('data.json')
+    return d.gallery
+  }
   const response = await apiClient.get('/gallery')
   return response.data
 }
@@ -93,6 +129,10 @@ export async function deleteGalleryItem(id) {
 }
 
 export async function fetchTestimonials() {
+  if (!apiClient.defaults.baseURL) {
+    const d = await fetchMock('data.json')
+    return d.testimonials
+  }
   const response = await apiClient.get('/testimonials')
   return response.data
 }

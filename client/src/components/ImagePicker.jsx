@@ -2,16 +2,17 @@ import { useEffect, useState } from 'react'
 import { uploadImage } from '../services/upload'
 
 function ImagePicker({ value, onChange }) {
-  const [preview, setPreview] = useState(value || '/images/placeholder.svg')
+  const placeholder = import.meta.env.BASE_URL + 'images/placeholder.svg'
+  const [preview, setPreview] = useState(value || placeholder)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
-    setPreview(value || '/images/placeholder.svg')
+    setPreview(value || placeholder)
   }, [value])
 
   const handleUrlChange = (event) => {
-    setPreview(event.target.value || '/images/placeholder.svg')
+    setPreview(event.target.value || placeholder)
     onChange(event)
   }
 

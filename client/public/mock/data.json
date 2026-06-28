@@ -1,0 +1,21 @@
+{
+  "counts": { "categories": 3, "products": 6 },
+  "business": {
+    "name": "Suggula's Kitchen",
+    "aboutTitle": "Homemade food with heart",
+    "about": "Delicious meals made from traditional recipes.",
+    "mission": "Deliver fresh homemade meals.",
+    "vision": "Be the go-to homemade meals experience."
+  },
+  "categories": [
+    { "id": "1", "name": "Breakfast" },
+    { "id": "2", "name": "Lunch" },
+    { "id": "3", "name": "Dessert" }
+  ],
+  "products": [
+    { "id": "p1", "name": "Idli", "price": 3, "categoryId": "1", "imageUrl": "/Suggulaskitchen/images/product.svg" },
+    { "id": "p2", "name": "Dosa", "price": 4, "categoryId": "1", "imageUrl": "/Suggulaskitchen/images/product.svg" }
+  ],
+  "gallery": [ { "id": "g1", "imageUrl": "/Suggulaskitchen/images/hero.svg", "caption": "Our kitchen" } ],
+  "testimonials": [ { "id": "t1", "name": "Ravi", "message": "Great food!" } ]
+}
