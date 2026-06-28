@@ -4,7 +4,9 @@ import seedDatabase from '../../../data/database.json'
 const envBase = import.meta.env.VITE_API_BASE_URL
 let baseURL = envBase?.trim() || ''
 
-const fallbackStorageKey = 'my-first-website-fallback-data'
+const FALLBACK_DATA_VERSION = 'v2'
+const fallbackStorageKey = `my-first-website-fallback-data-${FALLBACK_DATA_VERSION}`
+const fallbackStorageVersionKey = 'my-first-website-fallback-data-version'
 
 function normalizeFallbackData(source = seedDatabase) {
   const businessInfo = source?.businessInfo || source?.business || {}
@@ -35,6 +37,12 @@ async function readFallbackData() {
   }
 
   try {
+    const currentVersion = window.localStorage.getItem(fallbackStorageVersionKey)
+    if (currentVersion !== FALLBACK_DATA_VERSION) {
+      window.localStorage.removeItem(fallbackStorageKey)
+      window.localStorage.setItem(fallbackStorageVersionKey, FALLBACK_DATA_VERSION)
+    }
+
     const stored = window.localStorage.getItem(fallbackStorageKey)
     if (stored) {
       const parsed = JSON.parse(stored)
