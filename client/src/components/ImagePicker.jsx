@@ -3,8 +3,6 @@ import { useEffect, useMemo, useState } from 'react'
 const imageAssetEntries = import.meta.glob('/public/images/*', { eager: true, import: 'default' })
 
 function ImagePicker({ value, onChange }) {
-  const placeholder = import.meta.env.BASE_URL + 'images/placeholder.svg'
-  const [preview, setPreview] = useState(value || placeholder)
   const [searchTerm, setSearchTerm] = useState('')
   const [isOpen, setIsOpen] = useState(false)
 
@@ -25,18 +23,15 @@ function ImagePicker({ value, onChange }) {
   }, [availableImages, searchTerm])
 
   useEffect(() => {
-    setPreview(value || placeholder)
     const currentFileName = value?.split('/').filter(Boolean).pop() || ''
     setSearchTerm(currentFileName)
-  }, [value, placeholder])
+  }, [value])
 
   const handleUrlChange = (event) => {
-    setPreview(event.target.value || placeholder)
     onChange(event)
   }
 
   const selectImage = (image) => {
-    setPreview(image.url)
     setSearchTerm(image.name)
     setIsOpen(false)
     onChange({ target: { name: 'imageUrl', value: image.url } })
@@ -92,10 +87,6 @@ function ImagePicker({ value, onChange }) {
         </label>
       </div>
 
-      <div className="rounded-3xl border border-slate-700 bg-slate-950/70 p-3">
-        <p className="mb-2 text-sm font-medium text-slate-200">Preview</p>
-        <img src={preview} alt="Selected preview" className="h-24 w-full rounded-2xl object-cover" />
-      </div>
     </div>
   )
 }

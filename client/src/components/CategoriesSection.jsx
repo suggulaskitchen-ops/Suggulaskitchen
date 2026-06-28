@@ -35,7 +35,10 @@ function CategoriesSection({ categories, selectedCategory, onSelectCategory }) {
                 <img src={category.imageUrl} alt={category.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
               </div>
               <div className="flex items-center justify-between gap-4">
-                <h3 className="text-xl font-semibold text-slate-900">{category.name}</h3>
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-900">{category.name}</h3>
+                  {category.featured && <p className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-600">Featured</p>}
+                </div>
                 {category.priceRange && <span className="rounded-full bg-emerald-600/10 px-3 py-1 text-sm font-semibold text-emerald-700">{category.priceRange}</span>}
               </div>
               <p className="mt-3 text-slate-600">{category.description}</p>
