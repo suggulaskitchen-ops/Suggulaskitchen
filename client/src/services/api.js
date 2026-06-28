@@ -1,37 +1,98 @@
 import axios from 'axios'
+import seedDatabase from '../../../data/database.json'
 
 const envBase = import.meta.env.VITE_API_BASE_URL
 let baseURL = envBase?.trim() || ''
 
 const fallbackStorageKey = 'my-first-website-fallback-data'
 
-async function fetchFallbackData() {
+function normalizeFallbackData(source = seedDatabase) {
+  const businessInfo = source?.businessInfo || source?.business || {}
+  const categories = Array.isArray(source?.categories) ? source.categories : []
+  const products = Array.isArray(source?.products) ? source.products : []
+  const gallery = Array.isArray(source?.gallery) ? source.gallery : []
+  const testimonials = Array.isArray(source?.testimonials) ? source.testimonials : []
+
+  return {
+    businessInfo,
+    categories,
+    products,
+    gallery,
+    testimonials,
+    socialLinks: Array.isArray(businessInfo.socialLinks) ? businessInfo.socialLinks : [],
+    counts: {
+      categories: categories.length,
+      products: products.length
+    }
+  }
+}
+
+const fallbackSeedSnapshot = normalizeFallbackData(seedDatabase)
+
+async function readFallbackData() {
   if (typeof window === 'undefined') {
-    return null
+    return fallbackSeedSnapshot
   }
 
   try {
     const stored = window.localStorage.getItem(fallbackStorageKey)
     if (stored) {
-      return JSON.parse(stored)
+      const parsed = JSON.parse(stored)
+      if (parsed && typeof parsed === 'object') {
+        return normalizeFallbackData(parsed)
+      }
     }
   } catch {
-    // Ignore malformed stored data and fall back to the bundled mock data.
+    // Ignore malformed stored data and fall back to the bundled seed data.
   }
 
-  const fallback = await fetchMock('data.json')
-  if (typeof window !== 'undefined') {
-    window.localStorage.setItem(fallbackStorageKey, JSON.stringify(fallback))
-  }
-
-  return fallback
+  window.localStorage.setItem(fallbackStorageKey, JSON.stringify(fallbackSeedSnapshot))
+  return fallbackSeedSnapshot
 }
 
-async function persistFallbackData(nextData) {
+async function writeFallbackData(nextData) {
+  const normalized = normalizeFallbackData(nextData)
+
   if (typeof window !== 'undefined') {
-    window.localStorage.setItem(fallbackStorageKey, JSON.stringify(nextData))
+    window.localStorage.setItem(fallbackStorageKey, JSON.stringify(normalized))
   }
-  return nextData
+
+  return normalized
+}
+
+async function getFallbackCollection(collectionKey) {
+  const data = await readFallbackData()
+  return data?.[collectionKey] || []
+}
+
+async function createFallbackCollectionItem(collectionKey, payload) {
+  const data = await readFallbackData()
+  const item = { id: payload.id || `local-${Date.now()}`, ...payload }
+  const items = [item, ...(data?.[collectionKey] || [])]
+  await writeFallbackData({ ...(data || {}), [collectionKey]: items })
+  return item
+}
+
+async function updateFallbackCollectionItem(collectionKey, id, payload) {
+  const data = await readFallbackData()
+  const items = [...(data?.[collectionKey] || [])]
+  const index = items.findIndex((item) => String(item.id) === String(id))
+
+  if (index >= 0) {
+    items[index] = { ...items[index], ...payload }
+  } else {
+    items.unshift({ id, ...payload })
+  }
+
+  await writeFallbackData({ ...(data || {}), [collectionKey]: items })
+  return items[index >= 0 ? index : 0]
+}
+
+async function deleteFallbackCollectionItem(collectionKey, id) {
+  const data = await readFallbackData()
+  const items = (data?.[collectionKey] || []).filter((item) => String(item.id) !== String(id))
+  await writeFallbackData({ ...(data || {}), [collectionKey]: items })
+  return { success: true }
 }
 
 function hasConfiguredBackend() {
@@ -51,32 +112,26 @@ export const apiClient = axios.create({
   }
 })
 
-const mockBase = import.meta.env.BASE_URL + 'mock/'
-
-async function fetchMock(path) {
-  const url = mockBase + path
-  const res = await fetch(url)
-  if (!res.ok) throw new Error('Mock data not found: ' + url)
-  return res.json()
-}
-
 export async function fetchAppData() {
   if (!hasConfiguredBackend()) {
-    return fetchFallbackData()
+    return readFallbackData()
   }
   const response = await apiClient.get('/data')
   return response.data
 }
 
 export async function fetchDashboardCounts() {
-  if (!hasConfiguredBackend()) return fetchMock('counts.json')
+  if (!hasConfiguredBackend()) {
+    const data = await readFallbackData()
+    return data.counts || { categories: 0, products: 0 }
+  }
   const response = await apiClient.get('/data/counts')
   return response.data
 }
 
 export async function fetchFullData() {
   if (!hasConfiguredBackend()) {
-    return fetchFallbackData()
+    return readFallbackData()
   }
   const response = await apiClient.get('/data')
   return response.data
@@ -84,8 +139,8 @@ export async function fetchFullData() {
 
 export async function fetchBusinessInfo() {
   if (!hasConfiguredBackend()) {
-    const d = await fetchFallbackData()
-    return d?.business || {}
+    const data = await readFallbackData()
+    return data?.businessInfo || {}
   }
   const response = await apiClient.get('/business')
   return response.data
@@ -93,11 +148,10 @@ export async function fetchBusinessInfo() {
 
 export async function updateBusinessInfo(payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const business = { ...(data?.business || {}), ...payload }
-    const nextData = { ...(data || {}), business }
-    await persistFallbackData(nextData)
-    return business
+    const data = await readFallbackData()
+    const businessInfo = { ...(data?.businessInfo || {}), ...payload }
+    await writeFallbackData({ ...(data || {}), businessInfo })
+    return businessInfo
   }
   const response = await apiClient.put('/business', payload)
   return response.data
@@ -105,8 +159,7 @@ export async function updateBusinessInfo(payload) {
 
 export async function fetchCategories() {
   if (!hasConfiguredBackend()) {
-    const d = await fetchFallbackData()
-    return d?.categories || []
+    return getFallbackCollection('categories')
   }
   const response = await apiClient.get('/categories')
   return response.data
@@ -114,11 +167,7 @@ export async function fetchCategories() {
 
 export async function createCategory(payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const category = { id: payload.id || `local-${Date.now()}`, ...payload }
-    const categories = [category, ...(data?.categories || [])]
-    await persistFallbackData({ ...(data || {}), categories })
-    return category
+    return createFallbackCollectionItem('categories', payload)
   }
   const response = await apiClient.post('/categories', payload)
   return response.data
@@ -126,18 +175,7 @@ export async function createCategory(payload) {
 
 export async function updateCategory(id, payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const categories = [...(data?.categories || [])]
-    const index = categories.findIndex((item) => String(item.id) === String(id))
-
-    if (index >= 0) {
-      categories[index] = { ...categories[index], ...payload }
-    } else {
-      categories.unshift({ id, ...payload })
-    }
-
-    await persistFallbackData({ ...(data || {}), categories })
-    return categories[index >= 0 ? index : 0]
+    return updateFallbackCollectionItem('categories', id, payload)
   }
   const response = await apiClient.put(`/categories/${id}`, payload)
   return response.data
@@ -145,10 +183,7 @@ export async function updateCategory(id, payload) {
 
 export async function deleteCategory(id) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const categories = (data?.categories || []).filter((item) => String(item.id) !== String(id))
-    await persistFallbackData({ ...(data || {}), categories })
-    return { success: true }
+    return deleteFallbackCollectionItem('categories', id)
   }
   const response = await apiClient.delete(`/categories/${id}`)
   return response.data
@@ -156,8 +191,7 @@ export async function deleteCategory(id) {
 
 export async function fetchProducts() {
   if (!hasConfiguredBackend()) {
-    const d = await fetchFallbackData()
-    return d?.products || []
+    return getFallbackCollection('products')
   }
   const response = await apiClient.get('/products')
   return response.data
@@ -165,11 +199,7 @@ export async function fetchProducts() {
 
 export async function createProduct(payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const product = { id: payload.id || `local-${Date.now()}`, ...payload }
-    const products = [product, ...(data?.products || [])]
-    await persistFallbackData({ ...(data || {}), products })
-    return product
+    return createFallbackCollectionItem('products', payload)
   }
   const response = await apiClient.post('/products', payload)
   return response.data
@@ -177,18 +207,7 @@ export async function createProduct(payload) {
 
 export async function updateProduct(id, payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const products = [...(data?.products || [])]
-    const index = products.findIndex((item) => String(item.id) === String(id))
-
-    if (index >= 0) {
-      products[index] = { ...products[index], ...payload }
-    } else {
-      products.unshift({ id, ...payload })
-    }
-
-    await persistFallbackData({ ...(data || {}), products })
-    return products[index >= 0 ? index : 0]
+    return updateFallbackCollectionItem('products', id, payload)
   }
   const response = await apiClient.put(`/products/${id}`, payload)
   return response.data
@@ -196,10 +215,7 @@ export async function updateProduct(id, payload) {
 
 export async function deleteProduct(id) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const products = (data?.products || []).filter((item) => String(item.id) !== String(id))
-    await persistFallbackData({ ...(data || {}), products })
-    return { success: true }
+    return deleteFallbackCollectionItem('products', id)
   }
   const response = await apiClient.delete(`/products/${id}`)
   return response.data
@@ -207,8 +223,7 @@ export async function deleteProduct(id) {
 
 export async function fetchGalleryItems() {
   if (!hasConfiguredBackend()) {
-    const d = await fetchFallbackData()
-    return d?.gallery || []
+    return getFallbackCollection('gallery')
   }
   const response = await apiClient.get('/gallery')
   return response.data
@@ -216,10 +231,7 @@ export async function fetchGalleryItems() {
 
 export async function createGalleryItem(payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const gallery = [{ id: payload.id || `local-${Date.now()}`, ...payload }, ...(data?.gallery || [])]
-    await persistFallbackData({ ...(data || {}), gallery })
-    return gallery[0]
+    return createFallbackCollectionItem('gallery', payload)
   }
   const response = await apiClient.post('/gallery', payload)
   return response.data
@@ -227,18 +239,7 @@ export async function createGalleryItem(payload) {
 
 export async function updateGalleryItem(id, payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const gallery = [...(data?.gallery || [])]
-    const index = gallery.findIndex((item) => String(item.id) === String(id))
-
-    if (index >= 0) {
-      gallery[index] = { ...gallery[index], ...payload }
-    } else {
-      gallery.unshift({ id, ...payload })
-    }
-
-    await persistFallbackData({ ...(data || {}), gallery })
-    return gallery[index >= 0 ? index : 0]
+    return updateFallbackCollectionItem('gallery', id, payload)
   }
   const response = await apiClient.put(`/gallery/${id}`, payload)
   return response.data
@@ -246,10 +247,7 @@ export async function updateGalleryItem(id, payload) {
 
 export async function deleteGalleryItem(id) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const gallery = (data?.gallery || []).filter((item) => String(item.id) !== String(id))
-    await persistFallbackData({ ...(data || {}), gallery })
-    return { success: true }
+    return deleteFallbackCollectionItem('gallery', id)
   }
   const response = await apiClient.delete(`/gallery/${id}`)
   return response.data
@@ -257,8 +255,7 @@ export async function deleteGalleryItem(id) {
 
 export async function fetchTestimonials() {
   if (!hasConfiguredBackend()) {
-    const d = await fetchFallbackData()
-    return d?.testimonials || []
+    return getFallbackCollection('testimonials')
   }
   const response = await apiClient.get('/testimonials')
   return response.data
@@ -266,11 +263,7 @@ export async function fetchTestimonials() {
 
 export async function createTestimonial(payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const testimonial = { id: payload.id || `local-${Date.now()}`, ...payload }
-    const testimonials = [testimonial, ...(data?.testimonials || [])]
-    await persistFallbackData({ ...(data || {}), testimonials })
-    return testimonial
+    return createFallbackCollectionItem('testimonials', payload)
   }
   const response = await apiClient.post('/testimonials', payload)
   return response.data
@@ -278,18 +271,7 @@ export async function createTestimonial(payload) {
 
 export async function updateTestimonial(id, payload) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const testimonials = [...(data?.testimonials || [])]
-    const index = testimonials.findIndex((item) => String(item.id) === String(id))
-
-    if (index >= 0) {
-      testimonials[index] = { ...testimonials[index], ...payload }
-    } else {
-      testimonials.unshift({ id, ...payload })
-    }
-
-    await persistFallbackData({ ...(data || {}), testimonials })
-    return testimonials[index >= 0 ? index : 0]
+    return updateFallbackCollectionItem('testimonials', id, payload)
   }
   const response = await apiClient.put(`/testimonials/${id}`, payload)
   return response.data
@@ -297,10 +279,7 @@ export async function updateTestimonial(id, payload) {
 
 export async function deleteTestimonial(id) {
   if (!hasConfiguredBackend()) {
-    const data = await fetchFallbackData()
-    const testimonials = (data?.testimonials || []).filter((item) => String(item.id) !== String(id))
-    await persistFallbackData({ ...(data || {}), testimonials })
-    return { success: true }
+    return deleteFallbackCollectionItem('testimonials', id)
   }
   const response = await apiClient.delete(`/testimonials/${id}`)
   return response.data

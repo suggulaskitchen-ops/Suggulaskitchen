@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { createProduct, deleteProduct, fetchCategories, fetchProducts, updateProduct } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ImagePicker from '../components/ImagePicker'
+import StatusBanner from '../components/StatusBanner'
 
 const initialForm = {
   name: '',
@@ -113,11 +114,7 @@ function AdminProducts() {
         <p className="mt-2 text-slate-400">Create and update products shown in the customer menu.</p>
       </div>
 
-      {status && (
-        <div className={`rounded-3xl p-4 ${status.type === 'success' ? 'bg-emerald-600/15 text-emerald-200' : 'bg-rose-600/15 text-rose-200'}`}>
-          {status.message}
-        </div>
-      )}
+      <StatusBanner status={status} />
 
       <form onSubmit={handleSubmit} className="grid gap-6 xl:grid-cols-2">
         <label className="space-y-2">
