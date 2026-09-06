@@ -1,0 +1,36 @@
+{
+    "name": "homemade-food-management-system",
+    "homepage": "https://suggulaskitchen-ops.github.io/Suggulaskitchen",
+    "private": true,
+    "version": "1.0.0",
+    "description": "Full Stack Homemade Food Business Management System",
+    "author": "AI Software Architect",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "build:client": "vite build",
+        "preview": "vite preview",
+        "predeploy": "npm run build",
+        "postbuild": "node scripts/copy-404.js",
+        "deploy": "gh-pages -d dist --dotfiles --nojekyll"
+    },
+    "dependencies": {
+        "@supabase/supabase-js": "^2.115.0",
+        "framer-motion": "^11.0.0",
+        "lucide-react": "^0.373.0",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "react-hook-form": "^7.54.0",
+        "react-router-dom": "^6.16.0",
+        "react-toastify": "^11.1.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.4.0",
+        "autoprefixer": "^10.4.19",
+        "gh-pages": "^6.3.0",
+        "postcss": "^8.4.40",
+        "tailwindcss": "^3.4.4",
+        "vite": "^5.4.1"
+    }
+}
