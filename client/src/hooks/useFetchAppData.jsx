@@ -3,9 +3,13 @@ import { fetchAppData } from '../services/api'
 import { useAppContext } from '../context/AppContext'
 
 export function useFetchAppData() {
-  const { setAppData, setLoading, setError } = useAppContext()
+  const { appData, setAppData, setLoading, setError } = useAppContext()
 
   useEffect(() => {
+    if (appData.products && appData.categories && appData.businessInfo) {
+      return undefined
+    }
+
     let mounted = true
 
     async function load() {
@@ -23,17 +27,8 @@ export function useFetchAppData() {
 
     load()
 
-    const refreshWhenVisible = () => {
-      if (document.visibilityState === 'visible') load()
-    }
-
-    window.addEventListener('focus', refreshWhenVisible)
-    document.addEventListener('visibilitychange', refreshWhenVisible)
-
     return () => {
       mounted = false
-      window.removeEventListener('focus', refreshWhenVisible)
-      document.removeEventListener('visibilitychange', refreshWhenVisible)
     }
-  }, [setAppData, setLoading, setError])
+  }, [appData, setAppData, setLoading, setError])
 }

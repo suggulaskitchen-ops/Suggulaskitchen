@@ -68,6 +68,17 @@ function AdminGallery() {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+
+    if (form.mediaType === 'image' && !form.imageUrl) {
+      setStatus({ type: 'error', message: 'Upload an image before saving an image gallery item.' })
+      return
+    }
+
+    if (form.mediaType !== 'image' && !form.mediaUrl) {
+      setStatus({ type: 'error', message: 'Enter a social media URL before saving this gallery item.' })
+      return
+    }
+
     setSaving(true)
     setStatus(null)
 
@@ -82,8 +93,8 @@ function AdminGallery() {
         setStatus({ type: 'success', message: 'Gallery item created.' })
       }
       resetForm()
-    } catch {
-      setStatus({ type: 'error', message: 'Unable to save gallery item.' })
+    } catch (error) {
+      setStatus({ type: 'error', message: error?.message || 'Unable to save gallery item.' })
     } finally {
       setSaving(false)
     }
@@ -106,7 +117,7 @@ function AdminGallery() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-2">
+      <form onSubmit={handleSubmit} className="grid items-start gap-6 lg:grid-cols-2">
         <label className="space-y-2">
           <span className="text-sm font-medium text-slate-200">Image Title</span>
           <input name="title" value={form.title} onChange={handleChange} required className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
@@ -143,11 +154,13 @@ function AdminGallery() {
         </button>
       </form>
 
-      <div className="overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-950">
-        <table className="min-w-full divide-y divide-slate-800 text-left text-sm text-slate-200">
+      <div className="w-full overflow-x-auto rounded-[1.75rem] border border-slate-800 bg-slate-950">
+        <table className="w-full min-w-[1050px] divide-y divide-slate-800 text-left text-sm text-slate-200">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th className="px-6 py-4">Title</th>
+              <th className="px-6 py-4">Image URL</th>
+              <th className="px-6 py-4">Social URL</th>
               <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Actions</th>
             </tr>
@@ -156,14 +169,35 @@ function AdminGallery() {
             {gallery.map((item) => (
               <tr key={item.id}>
                 <td className="px-6 py-4">{item.title}</td>
+                <td className="max-w-xs px-6 py-4">
+                  {item.imageUrl ? (
+                    <a href={item.imageUrl} target="_blank" rel="noreferrer" className="flex items-center gap-3 text-emerald-300 hover:text-emerald-200">
+                      <img src={item.imageUrl} alt="" className="h-10 w-10 shrink-0 rounded-lg object-cover" />
+                      <span className="truncate">{item.imageUrl}</span>
+                    </a>
+                  ) : (
+                    <span className="text-slate-500">Not uploaded</span>
+                  )}
+                </td>
+                <td className="max-w-xs px-6 py-4">
+                  {item.mediaUrl ? (
+                    <a href={item.mediaUrl} target="_blank" rel="noreferrer" className="block max-w-xs truncate text-sky-300 hover:text-sky-200">
+                      {item.mediaUrl}
+                    </a>
+                  ) : (
+                    <span className="text-slate-500">Not provided</span>
+                  )}
+                </td>
                 <td className="px-6 py-4 text-slate-300">{item.status}</td>
-                <td className="px-6 py-4 space-x-2">
-                  <button type="button" onClick={() => handleEdit(item)} className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500">
-                    Edit
-                  </button>
-                  <button type="button" onClick={() => handleDelete(item.id)} className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500">
-                    Delete
-                  </button>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <div className="inline-flex items-center gap-2">
+                    <button type="button" onClick={() => handleEdit(item)} className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500">
+                      Edit
+                    </button>
+                    <button type="button" onClick={() => handleDelete(item.id)} className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500">
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Clock3, Leaf, ShoppingCart, UtensilsCrossed } from 'lucide-react'
 import { useAppContext } from '../context/AppContext'
 import { useFetchAppData } from '../hooks/useFetchAppData'
@@ -17,6 +18,11 @@ function CustomerPage() {
   const [selectedCategory, setSelectedCategory] = useState('')
   const [cartItems, setCartItems] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
+  const location = useLocation()
+
+  useEffect(() => {
+    setCartOpen(false)
+  }, [location.pathname, location.search, location.hash])
 
   const handleAddToCart = (product) => {
     setCartItems((prev) => {

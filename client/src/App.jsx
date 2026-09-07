@@ -40,6 +40,8 @@ function App() {
                 </Route>
               </Route>
             </Route>
+
+            <Route path="*" element={<Navigate to="/customer" replace />} />
           </Routes>
         </HashRouter>
       </AppProvider>

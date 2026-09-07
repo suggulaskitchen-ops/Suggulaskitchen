@@ -1,26 +1,47 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { adminLogin, adminLogout, getCurrentAdmin } from '../services/supabase/adminApi'
 import { supabase } from '../services/supabase/supabaseClient'
 
 const AuthContext = createContext(null)
+const INACTIVITY_TIMEOUT = 10 * 60 * 1000
+const LAST_ACTIVITY_KEY = 'suggulas-admin-last-activity'
 
 export function AuthProvider({ children }) {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false)
   const [isAuthLoading, setIsAuthLoading] = useState(true)
+  const inactivityTimer = useRef(null)
+
+  const clearInactivityTimer = () => {
+    if (inactivityTimer.current) {
+      window.clearTimeout(inactivityTimer.current)
+      inactivityTimer.current = null
+    }
+  }
 
   useEffect(() => {
     let mounted = true
 
-    getCurrentAdmin()
-      .then((user) => {
-        if (mounted) setIsAdminAuthenticated(Boolean(user))
-      })
-      .catch(() => {
+    async function restoreSession() {
+      try {
+        const user = await getCurrentAdmin()
+        const lastActivity = Number(localStorage.getItem(LAST_ACTIVITY_KEY))
+        const sessionIsCurrent = user && lastActivity && Date.now() - lastActivity < INACTIVITY_TIMEOUT
+
+        if (user && !sessionIsCurrent) {
+          await adminLogout()
+          localStorage.removeItem(LAST_ACTIVITY_KEY)
+        }
+
+        if (mounted) setIsAdminAuthenticated(Boolean(user && sessionIsCurrent))
+      } catch {
+        localStorage.removeItem(LAST_ACTIVITY_KEY)
         if (mounted) setIsAdminAuthenticated(false)
-      })
-      .finally(() => {
+      } finally {
         if (mounted) setIsAuthLoading(false)
-      })
+      }
+    }
+
+    restoreSession()
 
     const { data } = supabase?.auth.onAuthStateChange((_event, session) => {
       if (mounted) setIsAdminAuthenticated(Boolean(session?.user))
@@ -32,9 +53,39 @@ export function AuthProvider({ children }) {
     }
   }, [])
 
+  useEffect(() => {
+    if (!isAdminAuthenticated) {
+      clearInactivityTimer()
+      return undefined
+    }
+
+    const resetInactivityTimer = () => {
+      clearInactivityTimer()
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()))
+      inactivityTimer.current = window.setTimeout(async () => {
+        try {
+          await adminLogout()
+        } finally {
+          localStorage.removeItem(LAST_ACTIVITY_KEY)
+          setIsAdminAuthenticated(false)
+        }
+      }, INACTIVITY_TIMEOUT)
+    }
+
+    const activityEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll']
+    activityEvents.forEach((eventName) => window.addEventListener(eventName, resetInactivityTimer))
+    resetInactivityTimer()
+
+    return () => {
+      activityEvents.forEach((eventName) => window.removeEventListener(eventName, resetInactivityTimer))
+      clearInactivityTimer()
+    }
+  }, [isAdminAuthenticated])
+
   const login = async (username, password) => {
     try {
       await adminLogin(username, password)
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()))
       setIsAdminAuthenticated(true)
       return true
     } catch {
@@ -43,8 +94,12 @@ export function AuthProvider({ children }) {
   }
 
   const logout = async () => {
-    await adminLogout()
-    setIsAdminAuthenticated(false)
+    try {
+      await adminLogout()
+    } finally {
+      localStorage.removeItem(LAST_ACTIVITY_KEY)
+      setIsAdminAuthenticated(false)
+    }
   }
 
   const value = useMemo(

@@ -138,8 +138,8 @@ function AdminTestimonials() {
         </button>
       </form>
 
-      <div className="overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-950">
-        <table className="min-w-full divide-y divide-slate-800 text-left text-sm text-slate-200">
+      <div className="overflow-x-auto rounded-[1.75rem] border border-slate-800 bg-slate-950">
+        <table className="min-w-[680px] divide-y divide-slate-800 text-left text-sm text-slate-200">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th className="px-6 py-4">Customer</th>

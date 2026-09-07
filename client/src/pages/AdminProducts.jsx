@@ -201,8 +201,8 @@ function AdminProducts() {
         </button>
       </form>
 
-      <div className="overflow-hidden rounded-[1.75rem] border border-slate-800 bg-slate-950">
-        <table className="min-w-full divide-y divide-slate-800 text-left text-sm text-slate-200">
+      <div className="overflow-x-auto rounded-[1.75rem] border border-slate-800 bg-slate-950">
+        <table className="min-w-[760px] divide-y divide-slate-800 text-left text-sm text-slate-200">
           <thead className="bg-slate-900/90 text-slate-400">
             <tr>
               <th className="px-6 py-4">Name</th>
@@ -220,15 +220,16 @@ function AdminProducts() {
                 <td className="px-6 py-4 text-slate-300">{product.category}</td>
                 <td className="px-6 py-4 text-slate-300">₹{product.actualPrice}</td>
                 <td className="px-6 py-4 text-slate-300">₹{product.currentPrice}</td>
-                <td className="px-6 py-4 text-slate-300">₹{product.currentPrice}</td>
                 <td className="px-6 py-4 text-slate-300">{product.availability}</td>
-                <td className="px-6 py-4 space-x-2">
-                  <button type="button" onClick={() => handleEdit(product)} className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500">
-                    Edit
-                  </button>
-                  <button type="button" onClick={() => handleDelete(product.id)} className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500">
-                    Delete
-                  </button>
+                <td className="whitespace-nowrap px-6 py-4">
+                  <div className="inline-flex items-center gap-2">
+                    <button type="button" onClick={() => handleEdit(product)} className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500">
+                      Edit
+                    </button>
+                    <button type="button" onClick={() => handleDelete(product.id)} className="rounded-full bg-rose-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-rose-500">
+                      Delete
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

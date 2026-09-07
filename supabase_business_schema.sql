@@ -51,6 +51,34 @@ alter table public.products
   add column if not exists actual_price numeric(10, 2),
   add column if not exists current_price numeric(10, 2);
 
+-- Keep gallery records compatible with both existing camelCase data and the
+-- snake_case columns used by the public API.
+alter table public.gallery
+  add column if not exists "imageUrl" text,
+  add column if not exists image_url text,
+  add column if not exists "mediaType" text default 'image',
+  add column if not exists media_type text,
+  add column if not exists "mediaUrl" text,
+  add column if not exists media_url text;
+
+grant select on public.gallery to anon, authenticated;
+
+drop policy if exists "Public can read gallery records" on public.gallery;
+create policy "Public can read gallery records"
+on public.gallery
+for select
+to anon, authenticated
+using (true);
+
+update public.gallery
+set "imageUrl" = coalesce("imageUrl", image_url),
+    image_url = coalesce(image_url, "imageUrl"),
+    "mediaType" = coalesce("mediaType", media_type, 'image'),
+    media_type = coalesce(media_type, "mediaType", 'image'),
+    "mediaUrl" = coalesce("mediaUrl", media_url),
+    media_url = coalesce(media_url, "mediaUrl")
+where true;
+
 update public.products
 set actual_price = coalesce(actual_price, price),
     current_price = coalesce(current_price, price)
@@ -73,16 +101,17 @@ using (public.is_admin())
 with check (public.is_admin());
 
 insert into storage.buckets (id, name, public)
-values ('gallery', 'gallery', true)
-on conflict (id) do update set public = true;
+values ('gallery', 'gallery', false)
+on conflict (id) do update set public = false;
 
-grant select, insert on storage.objects to authenticated;
+grant select, insert, update, delete on storage.objects to authenticated;
 
 drop policy if exists "Public can view gallery images" on storage.objects;
-create policy "Public can view gallery images"
+drop policy if exists "Authenticated users can view gallery images" on storage.objects;
+create policy "Authenticated users can view gallery images"
 on storage.objects
 for select
-to public
+to authenticated
 using (bucket_id = 'gallery');
 
 drop policy if exists "Admins can upload gallery images" on storage.objects;
@@ -99,3 +128,10 @@ for update
 to authenticated
 using (bucket_id = 'gallery')
 with check (bucket_id = 'gallery');
+
+drop policy if exists "Authenticated users can delete gallery images" on storage.objects;
+create policy "Authenticated users can delete gallery images"
+on storage.objects
+for delete
+to authenticated
+using (bucket_id = 'gallery');

@@ -26,7 +26,7 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
           </button>
         ))}
       </div>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid items-stretch gap-4 auto-rows-fr md:grid-cols-2 xl:grid-cols-3">
         {products.length > 0 ? (
           products.map((product) => {
             const currentPrice = Number(product.currentPrice ?? product.offerPrice ?? product.price ?? 0)
@@ -34,7 +34,7 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
             const hasOffer = actualPrice > currentPrice
 
             return (
-              <article key={product.id} className="group overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/60">
+              <article key={product.id} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/60">
                 <div className="mb-4 overflow-hidden rounded-2xl bg-white">
                   <img src={product.imageUrl} alt={product.name} className="h-48 w-full object-cover transition duration-500 group-hover:scale-105" />
                 </div>
@@ -51,15 +51,15 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
                     {hasOffer && <p className="mt-2 text-xs text-slate-500 line-through">₹{actualPrice}</p>}
                   </div>
                 </div>
-                <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-500">
-                  <span className="rounded-full bg-white px-3 py-1">{product.category}</span>
-                  <span className="rounded-full bg-white px-3 py-1">{product.veg ? 'Veg' : 'Non Veg'}</span>
-                  <span className="rounded-full bg-white px-3 py-1">{product.preparationTime} min</span>
+                <div className="mt-4 flex min-h-7 flex-nowrap items-center gap-2 overflow-hidden text-xs text-slate-500">
+                  <span className="shrink-0 rounded-full bg-white px-3 py-1">{product.category}</span>
+                  <span className="shrink-0 rounded-full bg-white px-3 py-1">{product.veg ? 'Veg' : 'Non Veg'}</span>
+                  <span className="shrink-0 rounded-full bg-white px-3 py-1">{product.preparationTime || 0} min</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => onAddToCart(product)}
-                  className="mt-5 w-full rounded-xl bg-[#4d9f16] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#39800c]"
+                  className="mt-auto inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#4d9f16] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#39800c]"
                 >
                   Add to cart
                 </button>

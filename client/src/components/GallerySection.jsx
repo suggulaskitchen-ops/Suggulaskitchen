@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { ExternalLink } from 'lucide-react'
 
 function getYouTubeEmbedUrl(url) {
@@ -10,31 +11,76 @@ function getYouTubeEmbedUrl(url) {
   }
 }
 
+function getInstagramEmbedUrl(url) {
+  try {
+    const parsed = new URL(url)
+    if (parsed.hostname !== 'instagram.com' && !parsed.hostname.endsWith('.instagram.com')) return ''
+
+    const match = parsed.pathname.match(/^\/(p|reel|tv)\/([^/]+)/i)
+    return match ? `https://www.instagram.com/${match[1].toLowerCase()}/${match[2]}/embed?hidecaption=true` : ''
+  } catch {
+    return ''
+  }
+}
+
 function GalleryMedia({ item }) {
-  const mediaType = item.mediaType || 'image'
-  const mediaUrl = item.mediaUrl || item.imageUrl
+  const [imageFailed, setImageFailed] = useState(false)
+  const mediaUrl = item.mediaUrl || item.media_url || item.socialUrl || item.social_url || item.imageUrl || item.image_url || item.publicUrl || item.public_url || item.url
+  const normalizedUrl = String(mediaUrl || '').toLowerCase()
+  const mediaType = item.mediaType || item.media_type || (
+    normalizedUrl.includes('instagram.com') ? 'instagram' :
+      normalizedUrl.includes('facebook.com') ? 'facebook' :
+        normalizedUrl.includes('youtube.com') || normalizedUrl.includes('youtu.be') ? 'youtube' : 'image'
+  )
+
+  if (!mediaUrl) {
+    return <div className="flex h-[28rem] items-center justify-center bg-slate-100 text-sm text-slate-500 sm:h-[30rem]">Image unavailable</div>
+  }
 
   if (mediaType === 'youtube') {
     const embedUrl = getYouTubeEmbedUrl(mediaUrl)
-    return embedUrl ? <iframe title={item.title} src={embedUrl} className="aspect-video w-full" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /> : null
+    return embedUrl ? <iframe title={item.title} src={embedUrl} className="h-[28rem] w-full sm:h-[30rem]" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen /> : <div className="flex h-[28rem] items-center justify-center bg-slate-100 text-sm text-slate-500 sm:h-[30rem]">Video unavailable</div>
   }
 
-  if (mediaType === 'instagram' || mediaType === 'facebook') {
-    return (
-      <a href={mediaUrl} target="_blank" rel="noreferrer" className="flex aspect-[4/3] flex-col items-center justify-center gap-3 bg-[#26351c] p-6 text-center text-white transition hover:bg-[#354a24]">
+  if (mediaType === 'instagram') {
+    const embedUrl = getInstagramEmbedUrl(mediaUrl)
+    return embedUrl ? (
+      <div className="h-[28rem] w-full overflow-hidden bg-white sm:h-[30rem]">
+        <iframe title={item.title} src={embedUrl} className="h-full w-full border-0" scrolling="no" allow="autoplay; encrypted-media" allowFullScreen loading="lazy" />
+      </div>
+    ) : (
+      <a href={mediaUrl} target="_blank" rel="noreferrer" className="flex h-64 flex-col items-center justify-center gap-3 bg-[#26351c] p-6 text-center text-white transition hover:bg-[#354a24]">
         <ExternalLink className="h-8 w-8 text-[#b8e532]" />
-        <span className="text-sm font-semibold">View on {mediaType === 'instagram' ? 'Instagram' : 'Facebook'}</span>
+        <span className="text-sm font-semibold">View on Instagram</span>
       </a>
     )
   }
 
-  return <img src={mediaUrl} alt={item.title} className="aspect-[4/3] w-full object-cover" />
+  if (mediaType === 'facebook') {
+    return (
+      <a href={mediaUrl} target="_blank" rel="noreferrer" className="flex h-[28rem] flex-col items-center justify-center gap-3 bg-[#26351c] p-6 text-center text-white transition hover:bg-[#354a24] sm:h-[30rem]">
+        <ExternalLink className="h-8 w-8 text-[#b8e532]" />
+        <span className="text-sm font-semibold">View on Facebook</span>
+      </a>
+    )
+  }
+
+  if (imageFailed) {
+    return (
+      <a href={mediaUrl} target="_blank" rel="noreferrer" className="flex h-[28rem] flex-col items-center justify-center gap-3 bg-slate-100 p-6 text-center text-slate-600 transition hover:bg-slate-200 sm:h-[30rem]">
+        <ExternalLink className="h-8 w-8 text-emerald-600" />
+        <span className="text-sm font-semibold">View {item.title}</span>
+      </a>
+    )
+  }
+
+  return <div className="h-[28rem] w-full overflow-hidden bg-slate-100 sm:h-[30rem]"><img src={mediaUrl} alt={item.title} className="block h-full w-full object-cover" onError={() => setImageFailed(true)} /></div>
 }
 
 function GallerySection({ items }) {
   const visibleItems = items.filter((item) => {
     const title = String(item.title || '').trim().toLowerCase()
-    return item.status !== 'hidden' && (item.imageUrl || item.mediaUrl) && title && !['test', 'rrt'].includes(title)
+    return item.status !== 'hidden' && (item.imageUrl || item.image_url || item.mediaUrl || item.media_url || item.socialUrl || item.social_url || item.publicUrl || item.public_url || item.url) && title
   })
 
   return (

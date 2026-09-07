@@ -2,13 +2,58 @@ import { supabase } from './supabaseClient'
 
 const toArray = (value) => (Array.isArray(value) ? value : [])
 
-const imageUrlFromGallery = (gallery) => gallery?.imageUrl || gallery?.image_url || ''
+const imageUrlFromGallery = (gallery) => gallery?.imageUrl || gallery?.image_url || gallery?.publicUrl || gallery?.public_url || gallery?.url || gallery?.photo_url || ''
+const galleryImageFor = (galleryById, imageId) => imageUrlFromGallery(galleryById.get(imageId) || galleryById.get(String(imageId)))
 
-const normalizeGallery = (item) => ({ ...item, imageUrl: imageUrlFromGallery(item) })
+function storagePathFromUrl(imageUrl) {
+  if (!imageUrl) return ''
+
+  try {
+    const parsed = new URL(imageUrl, window.location.origin)
+    const markers = ['/storage/v1/object/public/gallery/', '/storage/v1/object/sign/gallery/']
+    const marker = markers.find((candidate) => parsed.pathname.includes(candidate))
+    return marker ? decodeURIComponent(parsed.pathname.split(marker)[1]) : ''
+  } catch {
+    return ''
+  }
+}
+
+function storageUrlForPersistence(imageUrl) {
+  const storagePath = storagePathFromUrl(imageUrl)
+  if (!storagePath) return imageUrl || ''
+
+  return `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/gallery/${storagePath
+    .split('/')
+    .map((part) => encodeURIComponent(part))
+    .join('/')}`
+}
+
+async function resolveGalleryImageUrl(imageUrl) {
+  const storagePath = storagePathFromUrl(imageUrl)
+  if (!storagePath) return imageUrl || ''
+
+  const { data: sessionData } = await supabase.auth.getSession()
+  if (!sessionData.session) return ''
+
+  const { data, error } = await supabase.storage
+    .from('gallery')
+    .createSignedUrl(storagePath, 60 * 60)
+
+  return error ? '' : data.signedUrl
+}
+
+const normalizeGallery = async (item) => ({
+  ...item,
+  imageUrl: await resolveGalleryImageUrl(imageUrlFromGallery(item)),
+  mediaUrl: item.mediaUrl || item.media_url || item.socialUrl || item.social_url || item.url || '',
+  mediaType: item.mediaType || item.media_type || ''
+})
 
 const normalizeCategory = (item, galleryById) => ({
   ...item,
-  imageUrl: imageUrlFromGallery(galleryById.get(item.image_id)) || item.imageUrl || ''
+  imageUrl: galleryImageFor(galleryById, item.image_id ?? item.imageId) || item.imageUrl || item.image_url || '',
+  priceRange: item.priceRange ?? item.price_range ?? '',
+  featured: Boolean(item.featured)
 })
 
 const normalizeProduct = (item, galleryById) => ({
@@ -19,16 +64,18 @@ const normalizeProduct = (item, galleryById) => ({
   offerPrice: item.actual_price && item.current_price && Number(item.actual_price) > Number(item.current_price)
     ? Number(item.actual_price)
     : null,
-  imageUrl: imageUrlFromGallery(galleryById.get(item.image_id)) || item.imageUrl || ''
+  imageUrl: galleryImageFor(galleryById, item.image_id ?? item.imageId) || item.imageUrl || item.image_url || ''
 })
 
 async function resolveGalleryId(imageUrl) {
   if (!imageUrl) return null
 
+  const persistedUrl = storageUrlForPersistence(imageUrl)
+
   const { data: imageUrlMatch, error: imageUrlError } = await supabase
     .from('gallery')
     .select('id')
-    .eq('imageUrl', imageUrl)
+    .eq('imageUrl', persistedUrl)
     .maybeSingle()
 
   if (imageUrlError) throw imageUrlError
@@ -37,7 +84,7 @@ async function resolveGalleryId(imageUrl) {
   const { data: imageUrlSnakeMatch, error: imageUrlSnakeError } = await supabase
     .from('gallery')
     .select('id')
-    .eq('image_url', imageUrl)
+    .eq('image_url', persistedUrl)
     .maybeSingle()
 
   if (imageUrlSnakeError) throw imageUrlSnakeError
@@ -230,7 +277,7 @@ export async function fetchCategories() {
   const { data, error } = await supabase.from('categories').select('*').order('created_at', { ascending: false })
   if (error) throw error
   const gallery = await fetchGalleryItems()
-  const galleryById = new Map(gallery.map((item) => [item.id, item]))
+  const galleryById = new Map(gallery.flatMap((item) => [[item.id, item], [String(item.id), item]]))
   return (data ?? []).map((item) => normalizeCategory(item, galleryById))
 }
 
@@ -269,7 +316,7 @@ export async function fetchProducts() {
   const { data, error } = await supabase.from('products').select('*').order('created_at', { ascending: false })
   if (error) throw error
   const gallery = await fetchGalleryItems()
-  const galleryById = new Map(gallery.map((item) => [item.id, item]))
+  const galleryById = new Map(gallery.flatMap((item) => [[item.id, item], [String(item.id), item]]))
   return (data ?? []).map((item) => normalizeProduct(item, galleryById))
 }
 
@@ -307,14 +354,16 @@ export async function deleteProduct(id) {
 export async function fetchGalleryItems() {
   const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false })
   if (error) throw error
-  return (data ?? []).map(normalizeGallery)
+  return Promise.all((data ?? []).map(normalizeGallery))
 }
 
 export async function createGalleryItem(payload) {
   const values = {
     title: payload.title,
-    imageUrl: payload.imageUrl || null,
-    image_url: payload.imageUrl || null,
+    imageUrl: storageUrlForPersistence(payload.imageUrl) || null,
+    image_url: storageUrlForPersistence(payload.imageUrl) || null,
+    media_type: payload.mediaType || 'image',
+    media_url: payload.mediaUrl || null,
     description: payload.description || null,
     status: payload.status || 'active'
   }
@@ -331,8 +380,10 @@ export async function createGalleryItem(payload) {
 export async function updateGalleryItem(id, payload) {
   const values = {
     title: payload.title,
-    imageUrl: payload.imageUrl || null,
-    image_url: payload.imageUrl || null,
+    imageUrl: storageUrlForPersistence(payload.imageUrl) || null,
+    image_url: storageUrlForPersistence(payload.imageUrl) || null,
+    media_type: payload.mediaType || 'image',
+    media_url: payload.mediaUrl || null,
     description: payload.description || null,
     status: payload.status || 'active'
   }
@@ -347,7 +398,26 @@ export async function updateGalleryItem(id, payload) {
   return normalizeGallery(data)
 }
 
+async function removeGalleryStorageFile(imageUrl) {
+  if (!imageUrl) return
+
+  const storagePath = storagePathFromUrl(imageUrl)
+  if (!storagePath) return
+
+  const { error } = await supabase.storage.from('gallery').remove([storagePath])
+  if (error) throw error
+}
+
 export async function deleteGalleryItem(id) {
+  const { data: galleryItem, error: fetchError } = await supabase
+    .from('gallery')
+    .select('imageUrl, image_url')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (fetchError) throw fetchError
+  await removeGalleryStorageFile(imageUrlFromGallery(galleryItem))
+
   const { error } = await supabase.from('gallery').delete().eq('id', id)
   if (error) throw error
   return { success: true }
