@@ -147,7 +147,7 @@ ALTER TABLE public.business ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.gallery ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.menus ENABLE ROW LEVEL SECURITY;
+
 ALTER TABLE public.customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.shipping_information ENABLE ROW LEVEL SECURITY;
@@ -176,11 +176,6 @@ CREATE POLICY "Public can read products" ON public.products FOR SELECT TO anon, 
 DROP POLICY IF EXISTS "Admins can write products" ON public.products;
 CREATE POLICY "Admins can write products" ON public.products FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 
--- Menus (legacy): public read, admin write
-DROP POLICY IF EXISTS "Public can read menus" ON public.menus;
-CREATE POLICY "Public can read menus" ON public.menus FOR SELECT TO anon, authenticated USING (true);
-DROP POLICY IF EXISTS "Admins can write menus" ON public.menus;
-CREATE POLICY "Admins can write menus" ON public.menus FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 
 -- Customers: Drop-Box slot
 -- 1. Clean the slate (Drop the old rules AND the new ones if they already exist)
@@ -225,7 +220,7 @@ CREATE POLICY "Admins can manage shipping information" ON public.shipping_inform
 -- 5. STORAGE BUCKETS
 
 INSERT INTO storage.buckets (id, name, public) VALUES ('gallery', 'gallery', true) ON CONFLICT (id) DO UPDATE SET public = true;
-INSERT INTO storage.buckets (id, name, public) VALUES ('menu-photos', 'menu-photos', true) ON CONFLICT (id) DO UPDATE SET public = true;
+
 
 DROP POLICY IF EXISTS "Public can view gallery images" ON storage.objects;
 CREATE POLICY "Public can view gallery images" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'gallery');
@@ -236,14 +231,7 @@ CREATE POLICY "Admins can update gallery images" ON storage.objects FOR UPDATE T
 DROP POLICY IF EXISTS "Admins can delete gallery images" ON storage.objects;
 CREATE POLICY "Admins can delete gallery images" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'gallery' AND public.is_admin());
 
-DROP POLICY IF EXISTS "Public can view menu photos" ON storage.objects;
-CREATE POLICY "Public can view menu photos" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'menu-photos');
-DROP POLICY IF EXISTS "Admins can upload menu photos" ON storage.objects;
-CREATE POLICY "Admins can upload menu photos" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'menu-photos' AND public.is_admin());
-DROP POLICY IF EXISTS "Admins can update menu photos" ON storage.objects;
-CREATE POLICY "Admins can update menu photos" ON storage.objects FOR UPDATE TO authenticated USING (bucket_id = 'menu-photos' AND public.is_admin()) WITH CHECK (bucket_id = 'menu-photos' AND public.is_admin());
-DROP POLICY IF EXISTS "Admins can delete menu photos" ON storage.objects;
-CREATE POLICY "Admins can delete menu photos" ON storage.objects FOR DELETE TO authenticated USING (bucket_id = 'menu-photos' AND public.is_admin());
+
 
 -- 6. RELOAD
 NOTIFY pgrst, 'reload schema';
