@@ -3,7 +3,7 @@
     "private": true,
     "version": "1.0.0",
     "description": "Full Stack Homemade Food Business Management System",
-    "author": "AI Software Architect",
+    "author": "Suggula's Kitchen",
     "type": "module",
     "scripts": {
         "dev": "vite",

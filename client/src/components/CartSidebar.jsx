@@ -25,7 +25,7 @@ function CartSidebar({ isOpen, onClose, businessInfo, cartItems, total, onRemove
         .map((item, index) => `${index + 1}. ${item.name} x${item.quantity} - ₹${item.price * item.quantity}`)
         .join('\n')}\n\nTotal: ₹${total}\n\nPlease confirm the order and delivery details.`
     : 'Hello! I would like to place an order.'
-  const whatsappUrl = `https://wa.me/${phone || '919876543210'}?text=${encodeURIComponent(whatsappText)}`
+  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(whatsappText)}`
 
   const handleCheckout = () => {
     if (cooldown > 0) return
