@@ -60,8 +60,13 @@ export function AuthProvider({ children }) {
     }
 
     const resetInactivityTimer = () => {
+      const now = Date.now()
+      const last = Number(localStorage.getItem(LAST_ACTIVITY_KEY))
+      // Throttle timer updates to once per second to prevent event spam (mousemove, scroll)
+      if (last && now - last < 1000 && inactivityTimer.current) return
+
       clearInactivityTimer()
-      localStorage.setItem(LAST_ACTIVITY_KEY, String(Date.now()))
+      localStorage.setItem(LAST_ACTIVITY_KEY, String(now))
       inactivityTimer.current = window.setTimeout(async () => {
         try {
           await adminLogout()

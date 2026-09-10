@@ -15,11 +15,7 @@ export {
   createGalleryItem,
   updateGalleryItem,
   deleteGalleryItem,
-  fetchTestimonials,
-  createTestimonial,
-  updateTestimonial,
-  deleteTestimonial,
-  getMenu,
+
   getOrCreateCustomer,
   placeOrder,
   submitOrder,

@@ -402,19 +402,3 @@ export async function deleteGalleryItem(id) {
   if (error) throw error
   return { success: true }
 }
-
-export async function fetchTestimonials() {
-  return []
-}
-
-export async function createTestimonial(payload) {
-  throw new Error('Testimonials require a public.testimonials table.')
-}
-
-export async function updateTestimonial(id, payload) {
-  throw new Error('Testimonials require a public.testimonials table.')
-}
-
-export async function deleteTestimonial(id) {
-  throw new Error('Testimonials require a public.testimonials table.')
-}
