@@ -3,8 +3,11 @@ import { useNavigate } from 'react-router-dom'
 
 function HeroSection({ businessInfo, products = [] }) {
   const navigate = useNavigate()
-  const heroImageUrl = products[0]?.imageUrl || `${import.meta.env.BASE_URL}images/product.svg`
-  const categoryImageUrl = products[1]?.imageUrl || products[0]?.imageUrl || `${import.meta.env.BASE_URL}images/product.svg`
+  
+  const defaultImageUrl = `${import.meta.env.BASE_URL}images/product.svg`
+  const heroImageUrl = businessInfo.heroImageUrl1 || products[0]?.imageUrl || defaultImageUrl
+  const categoryImageUrl = businessInfo.heroImageUrl2 || products[1]?.imageUrl || products[0]?.imageUrl || defaultImageUrl
+  const bgColor = businessInfo.hero_bg_color || '#26351c'
 
   const goToProducts = useCallback((e) => {
     if (e && e.preventDefault) e.preventDefault()
@@ -18,7 +21,7 @@ function HeroSection({ businessInfo, products = [] }) {
   }, [navigate])
 
   return (
-    <section className="relative overflow-hidden rounded-3xl bg-[#26351c] px-5 py-8 text-white shadow-2xl shadow-[#26351c]/20 sm:px-8 sm:py-10">
+    <section className="relative overflow-hidden rounded-3xl px-5 py-8 text-white shadow-2xl shadow-black/20 sm:px-8 sm:py-10" style={{ backgroundColor: bgColor }}>
       <div className="absolute inset-0 bg-[linear-gradient(125deg,rgba(184,229,50,0.2),transparent_48%,rgba(237,36,104,0.24))]" />
       <div className="relative mx-auto flex max-w-7xl flex-col gap-8 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
         <div className="max-w-xl space-y-5">

@@ -218,14 +218,19 @@ export async function fetchBusinessInfo() {
   const { data, error } = await supabase.from('business').select('*').order('id', { ascending: true }).limit(1).maybeSingle()
   if (error?.code === 'PGRST205') return {}
   if (error) throw error
-  return data
-    ? {
-        ...data,
-        aboutTitle: data.aboutTitle ?? data.about_title,
-        footerText: data.footerText ?? data.footer_text,
-        socialLinks: data.socialLinks ?? data.social_links
-      }
-    : {}
+  if (!data) return {}
+
+  const gallery = await fetchGalleryItems()
+  const galleryById = new Map(gallery.flatMap((item) => [[item.id, item], [String(item.id), item]]))
+
+  return {
+    ...data,
+    aboutTitle: data.aboutTitle ?? data.about_title,
+    footerText: data.footerText ?? data.footer_text,
+    socialLinks: data.socialLinks ?? data.social_links,
+    heroImageUrl1: galleryById.get(data.hero_image_1_id)?.image_url || '',
+    heroImageUrl2: galleryById.get(data.hero_image_2_id)?.image_url || ''
+  }
 }
 
 export async function updateBusinessInfo(payload) {
@@ -244,7 +249,10 @@ export async function updateBusinessInfo(payload) {
     address: payload.address || null,
     hours: payload.hours || null,
     footerText: payload.footerText || null,
-    socialLinks: toArray(payload.socialLinks)
+    socialLinks: toArray(payload.socialLinks),
+    hero_image_1_id: payload.hero_image_1_id || null,
+    hero_image_2_id: payload.hero_image_2_id || null,
+    hero_bg_color: payload.hero_bg_color || '#26351c'
   }
   const existing = await fetchBusinessInfo()
   const query = existing.id

@@ -38,8 +38,14 @@ CREATE TABLE IF NOT EXISTS public.business (
   phone text, whatsapp text, email text, address text, hours text,
   "footerText"  text,
   "socialLinks" jsonb not null default '[]'::jsonb,
+  hero_image_1_id bigint,
+  hero_image_2_id bigint,
+  hero_bg_color text not null default '#26351c',
   created_at    timestamptz not null default now()
 );
+
+-- Note: We cannot easily add foreign keys to the table definition here because gallery is defined below.
+-- So we add them as ALTER TABLE statements later in the schema script.
 
 -- Gallery must come before categories/products (they reference it via image_id)
 CREATE TABLE IF NOT EXISTS public.gallery (
@@ -140,6 +146,10 @@ UPDATE public.products
 SET actual_price = coalesce(actual_price, price),
     current_price = coalesce(current_price, price)
 WHERE actual_price IS NULL OR current_price IS NULL;
+
+ALTER TABLE public.business ADD COLUMN IF NOT EXISTS hero_image_1_id bigint references public.gallery(id) on delete set null;
+ALTER TABLE public.business ADD COLUMN IF NOT EXISTS hero_image_2_id bigint references public.gallery(id) on delete set null;
+ALTER TABLE public.business ADD COLUMN IF NOT EXISTS hero_bg_color text not null default '#26351c';
 
 -- 4. ROW LEVEL SECURITY
 

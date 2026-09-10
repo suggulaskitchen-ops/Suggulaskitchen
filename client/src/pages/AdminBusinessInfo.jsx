@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { fetchBusinessInfo, updateBusinessInfo } from '../services/api'
+import { fetchBusinessInfo, updateBusinessInfo, fetchGalleryItems } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 
 const emptyBusiness = {
@@ -17,13 +17,16 @@ const emptyBusiness = {
   address: '',
   hours: '',
   footerText: '',
-  socialLinks: []
+  socialLinks: [],
+  hero_image_1_id: '',
+  hero_image_2_id: '',
+  hero_bg_color: '#26351c'
 }
 
 const normalizeBusiness = (business) => Object.keys(emptyBusiness).reduce((result, field) => {
   result[field] = field === 'socialLinks'
     ? (Array.isArray(business?.[field]) ? business[field] : [])
-    : (business?.[field] ?? '')
+    : (business?.[field] ?? emptyBusiness[field])
   return result
 }, {})
 
@@ -33,11 +36,17 @@ function AdminBusinessInfo() {
   const [status, setStatus] = useState(null)
   const location = useLocation()
 
+  const [gallery, setGallery] = useState([])
+
   useEffect(() => {
     async function load() {
       try {
-        const info = await fetchBusinessInfo()
+        const [info, galleryItems] = await Promise.all([
+          fetchBusinessInfo(),
+          fetchGalleryItems()
+        ])
         setFormState(normalizeBusiness(info))
+        setGallery(galleryItems)
       } catch (error) {
         setStatus({ type: 'error', message: error?.message || 'Unable to load business settings.' })
         setFormState(normalizeBusiness({}))
@@ -141,6 +150,37 @@ function AdminBusinessInfo() {
           <span className="text-sm font-medium text-slate-200">Footer Text</span>
           <textarea name="footerText" value={formState.footerText} onChange={handleChange} rows="3" className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
         </label>
+
+        <div className="lg:col-span-2 mt-4 space-y-6 rounded-3xl border border-slate-700 bg-slate-800/50 p-6">
+          <h2 className="text-xl font-semibold text-white">Hero Section Design</h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-slate-200">Hero Box 1 Image</span>
+              <select name="hero_image_1_id" value={formState.hero_image_1_id || ''} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500">
+                <option value="">Default Product</option>
+                {gallery.filter(g => g.media_type === 'image').map(img => (
+                  <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-slate-200">Hero Box 2 Image</span>
+              <select name="hero_image_2_id" value={formState.hero_image_2_id || ''} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500">
+                <option value="">Default Product</option>
+                {gallery.filter(g => g.media_type === 'image').map(img => (
+                  <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
+                ))}
+              </select>
+            </label>
+            <label className="space-y-2">
+              <span className="text-sm font-medium text-slate-200">Background Color</span>
+              <div className="flex gap-2">
+                <input type="color" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="h-12 w-12 cursor-pointer rounded-xl border border-slate-600 bg-transparent" />
+                <input type="text" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
+              </div>
+            </label>
+          </div>
+        </div>
 
         <div className="lg:col-span-2 space-y-4 rounded-[1.75rem] border border-slate-700 bg-slate-950 p-4">
           <div className="flex items-center justify-between gap-4">
