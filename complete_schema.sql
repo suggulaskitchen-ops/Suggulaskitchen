@@ -5,10 +5,28 @@
 -- ==============================================================================
 
 -- 1. SECURITY FUNCTION
--- Any authenticated user is admin. Keep public sign-up DISABLED in Supabase Auth.
+
+-- Create the VIP list (admins table)
+CREATE TABLE IF NOT EXISTS public.admins (
+  user_id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  created_at timestamptz DEFAULT now()
+);
+
+-- Add yourself to the VIP list (REPLACE THE TEXT IN THE QUOTES!)
+INSERT INTO public.admins (user_id)
+VALUES ('PASTE-YOUR-COPIED-UUID-HERE')
+ON CONFLICT DO NOTHING;
+
+-- Update the rule to check the VIP list
 CREATE OR REPLACE FUNCTION public.is_admin()
-RETURNS boolean LANGUAGE sql SECURITY DEFINER AS $$
-  SELECT auth.uid() IS NOT NULL;
+RETURNS boolean
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT EXISTS (
+    SELECT 1 FROM public.admins WHERE user_id = auth.uid()
+  );
 $$;
 
 -- 2. TABLE DEFINITIONS
@@ -164,13 +182,35 @@ CREATE POLICY "Public can read menus" ON public.menus FOR SELECT TO anon, authen
 DROP POLICY IF EXISTS "Admins can write menus" ON public.menus;
 CREATE POLICY "Admins can write menus" ON public.menus FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
 
--- Customers: admin full access + anon insert+read (required by getOrCreateCustomer in api.js)
-DROP POLICY IF EXISTS "Admins can manage customers" ON public.customers;
-CREATE POLICY "Admins can manage customers" ON public.customers FOR ALL TO authenticated USING (public.is_admin()) WITH CHECK (public.is_admin());
+-- Customers: Drop-Box slot
+-- 1. Clean the slate (Drop the old rules AND the new ones if they already exist)
 DROP POLICY IF EXISTS "Customers can create their own record" ON public.customers;
-CREATE POLICY "Customers can create their own record" ON public.customers FOR INSERT TO anon WITH CHECK (true);
 DROP POLICY IF EXISTS "Customers can read their own record" ON public.customers;
-CREATE POLICY "Customers can read their own record" ON public.customers FOR SELECT TO anon USING (true);
+DROP POLICY IF EXISTS "Anyone can create a customer record" ON public.customers;
+DROP POLICY IF EXISTS "Admins can read customers" ON public.customers;
+DROP POLICY IF EXISTS "Admins can manage customers" ON public.customers;
+
+-- 2. Create the "Drop-Box" slot: Allow anyone to insert a new customer record
+CREATE POLICY "Anyone can create a customer record"
+ON public.customers
+FOR INSERT
+TO anon, authenticated
+WITH CHECK (true);
+
+-- 3. Lock the box: Only verified admins can read the customer list
+CREATE POLICY "Admins can read customers"
+ON public.customers
+FOR SELECT
+TO authenticated
+USING (public.is_admin());
+
+-- 4. Admin control: Only verified admins can edit or delete customers
+CREATE POLICY "Admins can manage customers"
+ON public.customers
+FOR ALL
+TO authenticated
+USING (public.is_admin())
+WITH CHECK (public.is_admin());
 
 -- Orders: admin full access + anon insert (required by placeOrder/submitOrder in api.js)
 DROP POLICY IF EXISTS "Admins can manage orders" ON public.orders;
