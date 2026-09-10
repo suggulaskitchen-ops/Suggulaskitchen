@@ -153,19 +153,10 @@ function AdminBusinessInfo() {
 
         <div className="lg:col-span-2 mt-4 space-y-6 rounded-3xl border border-slate-700 bg-slate-800/50 p-6">
           <h2 className="text-xl font-semibold text-white">Hero Section Design</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-200">Hero Box 1 Image</span>
+              <span className="text-sm font-medium text-slate-200">Hero Image</span>
               <select name="hero_image_1_id" value={formState.hero_image_1_id || ''} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500">
-                <option value="">Default Product</option>
-                {gallery.filter(g => g.media_type === 'image').map(img => (
-                  <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
-                ))}
-              </select>
-            </label>
-            <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-200">Hero Box 2 Image</span>
-              <select name="hero_image_2_id" value={formState.hero_image_2_id || ''} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500">
                 <option value="">Default Product</option>
                 {gallery.filter(g => g.media_type === 'image').map(img => (
                   <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
