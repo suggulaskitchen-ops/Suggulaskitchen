@@ -12,6 +12,7 @@ import AdminCategories from './pages/AdminCategories'
 import AdminProducts from './pages/AdminProducts'
 import AdminGallery from './pages/AdminGallery'
 import AdminDatabaseTable from './pages/AdminDatabaseTable'
+import PrivacyPolicyPage from './pages/PrivacyPolicyPage'
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/" element={<SharedLayout title="Suggula's Kitchen" description="Fresh homemade food delivered with warmth and care." />}>
               <Route index element={<Navigate to="/customer" replace />} />
               <Route path="customer" element={<CustomerPage />} />
+              <Route path="privacy" element={<PrivacyPolicyPage />} />
             </Route>
 
             <Route path="/admin/login" element={<SharedLayout title="Admin Login" description="Secure access for Suggula's Kitchen staff."><AdminLogin /></SharedLayout>} />

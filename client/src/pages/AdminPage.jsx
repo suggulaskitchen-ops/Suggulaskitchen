@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Sparkles, ImageIcon, Box, MessageSquare } from 'lucide-react'
+import { Sparkles, ImageIcon, Box } from 'lucide-react'
 import { fetchDashboardCounts } from '../services/api'
 import AdminModuleCard from '../components/AdminModuleCard'
 import AdminStatCard from '../components/AdminStatCard'
@@ -37,11 +37,10 @@ function AdminPage() {
           </div>
         </section>
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           <AdminStatCard title="Products" value={counts?.products ?? '--'} description="Total products available." Icon={Box} />
           <AdminStatCard title="Categories" value={counts?.categories ?? '--'} description="Total managed categories." Icon={Sparkles} />
           <AdminStatCard title="Gallery" value={counts?.gallery ?? '--'} description="Total gallery items." Icon={ImageIcon} />
-          <AdminStatCard title="Testimonials" value={counts?.testimonials ?? '--'} description="Customer reviews stored." Icon={MessageSquare} />
         </section>
 
         {loading && <p className="text-center text-slate-400">Loading dashboard metrics…</p>}

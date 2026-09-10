@@ -1,4 +1,18 @@
+import { useState, useEffect } from 'react'
+
 function CartSidebar({ isOpen, onClose, businessInfo, cartItems, total, onRemove, onUpdateQuantity, onClearCart }) {
+  const [cooldown, setCooldown] = useState(0)
+  const [consent, setConsent] = useState(false)
+
+  useEffect(() => {
+    let timer
+    if (cooldown > 0) {
+      timer = setInterval(() => {
+        setCooldown((prev) => prev - 1)
+      }, 1000)
+    }
+    return () => clearInterval(timer)
+  }, [cooldown])
   if (!isOpen) {
     return null
   }
@@ -12,6 +26,12 @@ function CartSidebar({ isOpen, onClose, businessInfo, cartItems, total, onRemove
         .join('\n')}\n\nTotal: ₹${total}\n\nPlease confirm the order and delivery details.`
     : 'Hello! I would like to place an order.'
   const whatsappUrl = `https://wa.me/${phone || '919876543210'}?text=${encodeURIComponent(whatsappText)}`
+
+  const handleCheckout = () => {
+    if (cooldown > 0) return
+    setCooldown(30)
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4">
@@ -67,14 +87,39 @@ function CartSidebar({ isOpen, onClose, businessInfo, cartItems, total, onRemove
               </div>
 
               <div className="space-y-3">
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="block rounded-full bg-emerald-600 px-6 py-3 text-center text-base font-semibold text-white transition hover:bg-emerald-500"
-                >
-                  Checkout via WhatsApp
-                </a>
+                {phone ? (
+                  <>
+                    <label className="flex items-start gap-2 text-sm text-slate-600">
+                      <input
+                        type="checkbox"
+                        checked={consent}
+                        onChange={(e) => setConsent(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                      />
+                      <span>
+                        I agree that my name, phone, and address will be used to process and deliver my order. Read our{' '}
+                        <a href="#/privacy" className="text-emerald-600 underline hover:text-emerald-500">
+                          Privacy Policy
+                        </a>
+                        .
+                      </span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleCheckout}
+                      disabled={cooldown > 0 || !consent}
+                      className={`block w-full rounded-full px-6 py-3 text-center text-base font-semibold text-white transition ${
+                        cooldown > 0 || !consent ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500'
+                      }`}
+                    >
+                      {cooldown > 0 ? `Checkout again in ${cooldown}s` : 'Checkout via WhatsApp'}
+                    </button>
+                  </>
+                ) : (
+                  <div className="rounded-full bg-slate-200 px-6 py-3 text-center text-base font-medium text-slate-500">
+                    WhatsApp checkout is currently unavailable
+                  </div>
+                )}
                 <button
                   type="button"
                   onClick={onClearCart}

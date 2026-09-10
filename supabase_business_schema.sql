@@ -34,8 +34,8 @@ create policy "Admins can write business content"
 on public.business
 for all
 to authenticated
-using (true)
-with check (true);
+using (public.is_admin())
+with check (public.is_admin());
 
 grant select, insert, update, delete on public.gallery to authenticated;
 
@@ -44,8 +44,8 @@ create policy "Admins can manage gallery records"
 on public.gallery
 for all
 to authenticated
-using (true)
-with check (true);
+using (public.is_admin())
+with check (public.is_admin());
 
 alter table public.products
   add column if not exists actual_price numeric(10, 2),
@@ -101,10 +101,9 @@ using (public.is_admin())
 with check (public.is_admin());
 
 insert into storage.buckets (id, name, public)
-values ('gallery', 'gallery', false)
-on conflict (id) do update set public = false;
+values ('gallery', 'gallery', true)
+on conflict (id) do update set public = true;
 
-grant select, insert, update, delete on storage.objects to authenticated;
 
 drop policy if exists "Public can view gallery images" on storage.objects;
 drop policy if exists "Authenticated users can view gallery images" on storage.objects;

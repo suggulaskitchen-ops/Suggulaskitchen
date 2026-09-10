@@ -32,14 +32,11 @@ async function resolveGalleryImageUrl(imageUrl) {
   const storagePath = storagePathFromUrl(imageUrl)
   if (!storagePath) return imageUrl || ''
 
-  const { data: sessionData } = await supabase.auth.getSession()
-  if (!sessionData.session) return ''
-
-  const { data, error } = await supabase.storage
+  const { data } = supabase.storage
     .from('gallery')
-    .createSignedUrl(storagePath, 60 * 60)
+    .getPublicUrl(storagePath)
 
-  return error ? '' : data.signedUrl
+  return data.publicUrl || ''
 }
 
 const normalizeGallery = async (item) => ({
