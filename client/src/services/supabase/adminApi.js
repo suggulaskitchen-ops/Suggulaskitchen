@@ -23,8 +23,25 @@ export async function adminLogout() {
 
 export async function getCurrentAdmin() {
   ensureSupabase()
-  const { data } = await supabase.auth.getSession()
-  return data.session?.user ?? null
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user ?? null
+  
+  if (!user) return null
+
+  // Check if their ID is in the admins VIP table
+  const { data: adminRecord } = await supabase
+    .from('admins')
+    .select('*')
+    .eq('user_id', user.id)
+    .single()
+
+  if (adminRecord) {
+    console.log("Welcome back, VIP Admin!")
+    return user
+  } else {
+    console.log("Normal user logged in. Admin access denied.")
+    return null
+  }
 }
 
 
