@@ -27,16 +27,7 @@ export async function getCurrentAdmin() {
   return data.session?.user ?? null
 }
 
-// ----- ADMIN: MENU MANAGEMENT -----
 
-export async function getAllMenuItems() {
-  let { data, error } = await supabase.from('menus').select('*')
-  if (error?.code === 'PGRST205') {
-    ({ data, error } = await supabase.from('menu').select('*'))
-  }
-  if (error) throw error
-  return data
-}
 
 export async function getAllCustomers() {
   const { data, error } = await supabase
@@ -75,48 +66,7 @@ export async function createCustomer({ name, phone, address }) {
   return data
 }
 
-export async function addMenuItem({ name, description, price, photo_url }) {
-  const { data, error } = await supabase
-    .from('menus')
-    .insert([{ name, description, actual_price: price, current_price: price, photo_url, available: true }])
-    .select()
-    .single()
-  if (error) throw error
-  return data
-}
 
-export async function updateMenuItem(id, updates) {
-  const { data, error } = await supabase
-    .from('menus')
-    .update(updates)
-    .eq('id', id)
-    .select()
-    .single()
-  if (error) throw error
-  return data
-}
-
-export async function deleteMenuItem(id) {
-  const { error } = await supabase.from('menus').delete().eq('id', id)
-  if (error) throw error
-}
-
-// ----- ADMIN: PHOTO UPLOAD -----
-// Requires a Storage bucket named "menu-photos" created in Supabase dashboard
-
-export async function uploadMenuPhoto(file) {
-  const fileExt = file.name.split('.').pop()
-  const fileName = `${Date.now()}.${fileExt}`
-
-  const { error: uploadError } = await supabase.storage
-    .from('menu-photos')
-    .upload(fileName, file)
-
-  if (uploadError) throw uploadError
-
-  const { data } = supabase.storage.from('menu-photos').getPublicUrl(fileName)
-  return data.publicUrl
-}
 
 // ----- ADMIN: ORDER MANAGEMENT -----
 

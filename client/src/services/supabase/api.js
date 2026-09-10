@@ -139,22 +139,7 @@ export async function uploadImage(file) {
   return data.publicUrl
 }
 
-export async function getMenu() {
-  ensureSupabase()
-  const query = (table) => supabase
-    .from(table)
-    .select('*')
-    .eq('available', true)
-    .order('created_at', { ascending: false })
 
-  let { data, error } = await query('menus')
-  if (error?.code === 'PGRST205') {
-    ({ data, error } = await query('menu'))
-  }
-
-  if (error) throw error
-  return data ?? []
-}
 
 export async function getOrCreateCustomer({ name, phone, address }) {
   ensureSupabase()
