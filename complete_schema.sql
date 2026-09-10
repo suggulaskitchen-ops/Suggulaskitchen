@@ -247,3 +247,45 @@ CREATE POLICY "Admins can delete menu photos" ON storage.objects FOR DELETE TO a
 
 -- 6. RELOAD
 NOTIFY pgrst, 'reload schema';
+
+
+-- 7. SECURE ORDER PRICING TRIGGER
+-- Prevents clients from spoofing the total price. Recalculates total securely on the server.
+CREATE OR REPLACE FUNCTION public.recalculate_order_total()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS \$\$
+DECLARE
+  item_record jsonb;
+  product_price numeric;
+  calculated_total numeric := 0;
+BEGIN
+  -- Loop through each item in the JSON array
+  FOR item_record IN SELECT * FROM jsonb_array_elements(NEW.items)
+  LOOP
+    -- Get the genuine current_price from the products table
+    SELECT coalesce(current_price, price, 0) INTO product_price
+    FROM public.products
+    WHERE id = (item_record->>'id')::bigint;
+
+    IF NOT FOUND THEN
+      RAISE EXCEPTION 'Product ID % not found. Cannot process order.', item_record->>'id';
+    END IF;
+
+    -- Add to the running total (price * quantity)
+    calculated_total := calculated_total + (product_price * coalesce((item_record->>'quantity')::numeric, 1));
+  END LOOP;
+
+  -- Overwrite the client-provided total with the secure database-calculated total
+  NEW.total := calculated_total;
+  
+  RETURN NEW;
+END;
+\$\$;
+
+DROP TRIGGER IF EXISTS enforce_secure_order_total ON public.orders;
+CREATE TRIGGER enforce_secure_order_total
+  BEFORE INSERT OR UPDATE ON public.orders
+  FOR EACH ROW
+  EXECUTE FUNCTION public.recalculate_order_total();
