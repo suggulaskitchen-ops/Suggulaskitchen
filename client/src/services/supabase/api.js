@@ -342,7 +342,6 @@ export async function fetchGalleryItems() {
 export async function createGalleryItem(payload) {
   const values = {
     title: payload.title,
-    imageUrl: storageUrlForPersistence(payload.imageUrl) || null,
     image_url: storageUrlForPersistence(payload.imageUrl) || null,
     media_type: payload.mediaType || 'image',
     media_url: payload.mediaUrl || null,
@@ -362,7 +361,6 @@ export async function createGalleryItem(payload) {
 export async function updateGalleryItem(id, payload) {
   const values = {
     title: payload.title,
-    imageUrl: storageUrlForPersistence(payload.imageUrl) || null,
     image_url: storageUrlForPersistence(payload.imageUrl) || null,
     media_type: payload.mediaType || 'image',
     media_url: payload.mediaUrl || null,
