@@ -11,8 +11,8 @@ function SharedLayout({ title, description, children }) {
 
   return (
     <div className={`min-h-screen text-slate-900 ${isAdminPage ? 'bg-[#24301b]' : 'bg-[#fffaf3]'}`}>
-      <main className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
-        <header className={`sticky top-0 z-50 mb-6 flex items-center justify-between px-4 py-3 backdrop-blur-xl transition-all ${isAdminPage ? 'border-b border-white/10 bg-[#24301b]/85 pb-4 text-white' : 'bg-[#fffaf3]/85 text-[#27301e] shadow-sm border-b border-[#d8cebd]/50'} -mx-4 sm:-mx-6 lg:-mx-8 sm:px-6 lg:px-8`}>
+      <header className={`sticky top-0 z-50 w-full backdrop-blur-xl transition-all ${isAdminPage ? 'border-b border-white/10 bg-[#24301b]/85 py-4 text-white' : 'bg-[#fffaf3]/85 text-[#27301e] shadow-sm border-b border-[#d8cebd]/50 py-3'}`}>
+        <div className="mx-auto flex max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-8">
           <Link to={isAdminPage ? '/admin' : '/customer'} className="group flex items-center gap-3 transition-all hover:opacity-80">
             <div className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl ${isAdminPage ? 'bg-[#fffaf3]' : 'bg-white shadow-sm border border-[#e6dccb]'}`}>
               <Logo className="h-full w-full object-cover p-0.5 transition-transform group-hover:scale-105" alt="Suggula's Kitchen logo" />
@@ -49,8 +49,10 @@ function SharedLayout({ title, description, children }) {
               </>
             )}
           </div>
-        </header>
+        </div>
+      </header>
 
+      <main className="mx-auto max-w-[1440px] px-4 py-6 sm:px-6 lg:px-8">
         {children ?? <Outlet />}
       </main>
     </div>
