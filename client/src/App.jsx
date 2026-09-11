@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AppProvider } from './context/AppContext'
 import { AuthProvider } from './context/AuthContext'
 import SharedLayout from './components/SharedLayout'
@@ -18,11 +18,10 @@ function App() {
   return (
     <AuthProvider>
       <AppProvider>
-        <HashRouter>
+        <BrowserRouter>
           <Routes>
             <Route path="/" element={<SharedLayout title="Suggula's Kitchen" description="Fresh homemade food delivered with warmth and care." />}>
-              <Route index element={<Navigate to="/customer" replace />} />
-              <Route path="customer" element={<CustomerPage />} />
+              <Route index element={<CustomerPage />} />
               <Route path="privacy" element={<PrivacyPolicyPage />} />
             </Route>
 
@@ -43,9 +42,9 @@ function App() {
               </Route>
             </Route>
 
-            <Route path="*" element={<Navigate to="/customer" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </HashRouter>
+        </BrowserRouter>
       </AppProvider>
     </AuthProvider>
   )
