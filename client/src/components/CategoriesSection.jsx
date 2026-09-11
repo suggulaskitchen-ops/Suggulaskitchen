@@ -8,7 +8,7 @@ function CategoriesSection({ categories, onSelectCategory }) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {categories.length > 0 ? (
           categories.map((category) => (
             <article key={category.id} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/60">

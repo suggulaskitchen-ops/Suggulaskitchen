@@ -304,13 +304,21 @@ function AdminDatabaseTable({ table }) {
                 </div>}
               </div>
               <input type="text" placeholder="Delivery partner name" value={form.delivery_partner_name || ''} onChange={(event) => updateForm('delivery_partner_name', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-              <input type="date" value={form.delivery_date} onChange={(event) => updateForm('delivery_date', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-              <input type="date" value={form.shipping_date} onChange={(event) => updateForm('shipping_date', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-              <input type="url" placeholder="Tracking link" value={form.tracking_link || ''} onChange={(event) => updateForm('tracking_link', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 md:col-span-2" />
+              
+              <div className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-3 text-slate-100">
+                <span className="shrink-0 text-sm font-medium text-slate-500">Ship date</span>
+                <input type="date" value={form.shipping_date} onChange={(event) => updateForm('shipping_date', event.target.value)} className="w-full bg-transparent py-2 outline-none" />
+              </div>
+              <div className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-3 text-slate-100">
+                <span className="shrink-0 text-sm font-medium text-slate-500">Delivery</span>
+                <input type="date" value={form.delivery_date} onChange={(event) => updateForm('delivery_date', event.target.value)} className="w-full bg-transparent py-2 outline-none" />
+              </div>
+
               <select value={form.delivery_status} onChange={(event) => updateForm('delivery_status', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100"><option value="pending">Pending</option><option value="assigned">Assigned</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option></select>
+              <input type="url" placeholder="Tracking link" value={form.tracking_link || ''} onChange={(event) => updateForm('tracking_link', event.target.value)} className="md:col-span-2 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
             </>
           )}
-          <button type="submit" disabled={(table === 'orders' && selectedItems.length === 0) || !form.customer_id} className="rounded-xl bg-emerald-500 px-4 py-2 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">{editingShippingId ? 'Update shipping' : 'Save record'}</button>
+          <button type="submit" disabled={(table === 'orders' && selectedItems.length === 0) || !form.customer_id} className="md:col-span-2 mt-2 rounded-xl bg-emerald-500 px-4 py-2 font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">{editingShippingId ? 'Update shipping' : 'Save record'}</button>
         </form>
       )}
 

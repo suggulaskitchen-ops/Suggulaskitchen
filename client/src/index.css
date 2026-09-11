@@ -4,12 +4,20 @@
 
 :root {
   color-scheme: light;
-  font-family: 'Trebuchet MS', ui-sans-serif, system-ui, sans-serif;
+  font-family: 'Outfit', ui-sans-serif, system-ui, -apple-system, sans-serif;
   background-color: #fffaf3;
 }
 
 html {
   scroll-behavior: smooth;
+  /* Hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+::-webkit-scrollbar {
+  display: none;
 }
 
 body {
@@ -19,8 +27,8 @@ body {
 }
 
 h1, h2, h3 {
-  font-family: Georgia, 'Times New Roman', serif;
-  letter-spacing: 0;
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  letter-spacing: -0.01em;
 }
 
 * {
@@ -35,6 +43,29 @@ select {
 }
 
 ::selection {
-  background-color: #ed2468;
+  background-color: #e11d48;
   color: white;
+}
+
+/* Micro-animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes fadeInUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(24px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

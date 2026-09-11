@@ -90,7 +90,7 @@ function GallerySection({ items }) {
         <h2 className="mt-2 text-3xl font-semibold text-slate-900">Made with care</h2>
       </div>
       {visibleItems.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
           {visibleItems.map((item) => (
             <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
               <GalleryMedia item={item} />

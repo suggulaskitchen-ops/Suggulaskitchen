@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useLocation } from 'react-router-dom'
 import { Clock3, Leaf, ShoppingCart, UtensilsCrossed } from 'lucide-react'
 import { useAppContext } from '../context/AppContext'
@@ -18,7 +19,12 @@ function CustomerPage() {
   const [selectedCategory, setSelectedCategory] = useState('')
   const [cartItems, setCartItems] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
+  const [navbarContainer, setNavbarContainer] = useState(null)
   const location = useLocation()
+
+  useEffect(() => {
+    setNavbarContainer(document.getElementById('navbar-actions'))
+  }, [])
 
   useEffect(() => {
     setCartOpen(false)
@@ -73,23 +79,33 @@ function CustomerPage() {
 
   return (
     <main className="min-h-screen bg-[#fffaf3] text-[#26351c]">
-      <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2 rounded-2xl border border-[#d8cebd] bg-[#fffdf8]/95 p-2 shadow-xl shadow-[#6f6b60]/15 backdrop-blur-sm sm:bottom-auto sm:top-5 sm:right-8">
+      {navbarContainer && createPortal(
         <button
           type="button"
           onClick={() => setCartOpen((prev) => !prev)}
-          className="flex items-center gap-2 rounded-xl bg-[#4d9f16] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#39800c]"
+          className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 hover:bg-rose-700 active:scale-95"
         >
           <ShoppingCart className="h-5 w-5" />
           Cart {cartItems.length > 0 && `(${cartItems.length})`}
-        </button>
-      </div>
+        </button>,
+        navbarContainer
+      )}
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-1 py-2 sm:gap-8 sm:px-2">
         <HeroSection businessInfo={appData.businessInfo || {}} products={products} />
 
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div className="flex items-center gap-3 rounded-2xl border border-[#f0d5dc] bg-[#fffdf8] p-4"><UtensilsCrossed className="h-5 w-5 text-[#ed2468]" /><span><strong className="block text-sm text-[#26351c]">{products.length} dishes</strong><small className="text-xs text-[#65705d]">Made today</small></span></div>
-          <div className="flex items-center gap-3 rounded-2xl border border-[#d6e7b9] bg-[#fffdf8] p-4"><Leaf className="h-5 w-5 text-[#4d9f16]" /><span><strong className="block text-sm text-[#26351c]">100% homemade</strong><small className="text-xs text-[#65705d]">Fresh ingredients</small></span></div>
-          <div className="flex items-center gap-3 rounded-2xl border border-[#f0d5dc] bg-[#fffdf8] p-4"><Clock3 className="h-5 w-5 text-[#ed2468]" /><span><strong className="block text-sm text-[#26351c]">Quick ordering</strong><small className="text-xs text-[#65705d]">WhatsApp checkout</small></span></div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <div className="group flex items-center gap-4 rounded-2xl border border-transparent bg-white p-5 shadow-sm shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-md hover:shadow-black/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition-colors group-hover:bg-rose-100"><UtensilsCrossed className="h-5 w-5" /></div>
+            <span><strong className="block text-sm font-semibold text-[#26351c]">{products.length} dishes</strong><small className="text-sm text-[#65705d]">Made today</small></span>
+          </div>
+          <div className="group flex items-center gap-4 rounded-2xl border border-transparent bg-white p-5 shadow-sm shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-md hover:shadow-black/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-600 transition-colors group-hover:bg-green-100"><Leaf className="h-5 w-5" /></div>
+            <span><strong className="block text-sm font-semibold text-[#26351c]">100% homemade</strong><small className="text-sm text-[#65705d]">Fresh ingredients</small></span>
+          </div>
+          <div className="group flex items-center gap-4 rounded-2xl border border-transparent bg-white p-5 shadow-sm shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-md hover:shadow-black/10">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition-colors group-hover:bg-rose-100"><Clock3 className="h-5 w-5" /></div>
+            <span><strong className="block text-sm font-semibold text-[#26351c]">Quick ordering</strong><small className="text-sm text-[#65705d]">WhatsApp checkout</small></span>
+          </div>
         </div>
 
         {loading && <p className="border-y border-[#d8cebd] py-5 text-center text-sm text-[#6f6b60]">Preparing today’s menu...</p>}

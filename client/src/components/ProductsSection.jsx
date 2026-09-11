@@ -26,7 +26,7 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
           </button>
         ))}
       </div>
-      <div className="grid items-stretch gap-4 auto-rows-fr md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid items-stretch gap-4 auto-rows-fr sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
         {products.length > 0 ? (
           products.map((product) => {
             const currentPrice = Number(product.currentPrice ?? product.offerPrice ?? product.price ?? 0)

@@ -12,40 +12,43 @@ function SharedLayout({ title, description, children }) {
   return (
     <div className={`min-h-screen text-slate-900 ${isAdminPage ? 'bg-[#24301b]' : 'bg-[#fffaf3]'}`}>
       <main className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 lg:px-8">
-        <header className={`mb-5 flex flex-col gap-4 border-b px-1 pb-4 sm:flex-row sm:items-center sm:justify-between ${isAdminPage ? 'border-white/10 text-white' : 'border-[#d8cebd]'}`}>
-          <Link to={isAdminPage ? '/admin' : '/customer'} className="flex items-center gap-4">
-            <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl ${isAdminPage ? 'bg-[#fffaf3]' : 'bg-white shadow-sm'}`}>
-              <Logo className="h-full w-full object-cover" alt="Suggula's Kitchen logo" />
+        <header className={`sticky top-0 z-50 mb-6 flex items-center justify-between px-4 py-3 backdrop-blur-xl transition-all ${isAdminPage ? 'border-b border-white/10 bg-[#24301b]/85 pb-4 text-white' : 'bg-[#fffaf3]/85 text-[#27301e] shadow-sm border-b border-[#d8cebd]/50'} -mx-4 sm:-mx-6 lg:-mx-8 sm:px-6 lg:px-8`}>
+          <Link to={isAdminPage ? '/admin' : '/customer'} className="group flex items-center gap-3 transition-all hover:opacity-80">
+            <div className={`flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl ${isAdminPage ? 'bg-[#fffaf3]' : 'bg-white shadow-sm border border-[#e6dccb]'}`}>
+              <Logo className="h-full w-full object-cover p-0.5 transition-transform group-hover:scale-105" alt="Suggula's Kitchen logo" />
             </div>
-            <div>
-              <p className={`text-xs uppercase tracking-[0.35em] ${isAdminPage ? 'text-[#b8e532]' : 'text-[#4d9f16]'}`}>Suggula's Kitchen</p>
-              <h1 className={`mt-1 font-serif text-xl sm:text-2xl ${isAdminPage ? 'text-white' : 'text-[#27301e]'}`}>{title}</h1>
-              <p className={`mt-1 max-w-2xl text-sm ${isAdminPage ? 'text-white/60' : 'text-[#6f6b60]'}`}>{description}</p>
+            <div className="flex flex-col">
+              <h1 className={`font-serif text-[1.35rem] leading-tight font-semibold tracking-tight ${isAdminPage ? 'text-white' : 'text-[#27301e]'}`}>
+                {title}
+              </h1>
+              {isAdminPage && <p className="text-xs text-white/60">{description}</p>}
             </div>
           </Link>
-          {showAuthAction && (
-            <div className="flex items-center gap-3">
-              {isAdminPage && isAdminAuthenticated ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    logout()
-                    navigate('/')
-                  }}
-                  className="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
-                >
-                  Sign out
-                </button>
-              ) : (
-                <Link
-                  to="/admin/login"
-                  className="rounded-xl bg-[#ed2468] px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-[#c91654]"
-                >
-                  Admin login
-                </Link>
-              )}
-            </div>
-          )}
+          <div id="navbar-actions" className="flex items-center gap-3">
+            {showAuthAction && (
+              <>
+                {isAdminPage && isAdminAuthenticated ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      logout()
+                      navigate('/')
+                    }}
+                    className="rounded-xl border border-white/15 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-white/15"
+                  >
+                    Sign out
+                  </button>
+                ) : (
+                  <Link
+                    to="/admin/login"
+                    className="rounded-xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-700"
+                  >
+                    Admin login
+                  </Link>
+                )}
+              </>
+            )}
+          </div>
         </header>
 
         {children ?? <Outlet />}
