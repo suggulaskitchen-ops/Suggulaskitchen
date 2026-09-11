@@ -45,7 +45,7 @@ function HeroSection({ businessInfo, products = [] }) {
         </div>
         <div className="h-64 w-full sm:h-72 lg:w-[420px] lg:shrink-0">
           <div className="h-full w-full overflow-hidden rounded-[1.75rem] bg-white/10 p-3 backdrop-blur-sm">
-            <div className="relative h-full w-full overflow-hidden rounded-[1.35rem] animate-float shadow-inner shadow-black/10">
+            <div className="relative h-full w-full overflow-hidden rounded-[1.35rem] shadow-inner shadow-black/10">
               <img 
                 src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" 
                 alt="Delicious homemade food" 
