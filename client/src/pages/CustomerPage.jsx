@@ -96,7 +96,7 @@ function CustomerPage() {
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="group flex items-center gap-4 rounded-2xl border border-transparent bg-white p-5 shadow-sm shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-md hover:shadow-black/10">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition-colors group-hover:bg-rose-100"><UtensilsCrossed className="h-5 w-5" /></div>
-            <span><strong className="block text-sm font-semibold text-[#26351c]">{products.length} dishes</strong><small className="text-sm text-[#65705d]">Made today</small></span>
+            <span><strong className="block text-sm font-semibold text-[#26351c]">{products.filter(p => p.availability !== 'unavailable').length} dishes</strong><small className="text-sm text-[#65705d]">Made today</small></span>
           </div>
           <div className="group flex items-center gap-4 rounded-2xl border border-transparent bg-white p-5 shadow-sm shadow-black/5 transition-all hover:-translate-y-1 hover:shadow-md hover:shadow-black/10">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-50 text-green-600 transition-colors group-hover:bg-green-100"><Leaf className="h-5 w-5" /></div>
