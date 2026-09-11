@@ -82,171 +82,208 @@ function AdminBusinessInfo() {
   }
 
   return (
-    <div className="space-y-6 rounded-[2rem] bg-slate-900/90 p-8 text-slate-100 shadow-2xl shadow-black/20">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mx-auto max-w-4xl space-y-8 pb-10">
+      {/* Header Section */}
+      <div className="flex items-end justify-between border-b border-white/10 pb-6">
         <div>
-          <h1 className="text-3xl font-semibold">Business Information</h1>
-          <p className="text-slate-400">Edit the core business content that appears on the customer website.</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-white">Business Information</h1>
+          <p className="mt-2 text-sm text-slate-400">Edit the core business content that appears on the customer website.</p>
         </div>
-        <span className="rounded-full bg-emerald-600/20 px-4 py-2 text-sm text-emerald-200">{location.pathname}</span>
+        <span className="hidden rounded-full border border-white/10 bg-slate-800/50 px-3 py-1.5 text-xs font-medium text-slate-400 sm:inline-block">{location.pathname}</span>
       </div>
 
       {status && (
-        <div className={`rounded-3xl p-4 ${status.type === 'success' ? 'bg-emerald-600/15 text-emerald-200' : 'bg-rose-600/15 text-rose-200'}`}>
+        <div className={`rounded-xl p-4 text-sm font-medium ${status.type === 'success' ? 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-400' : 'border border-rose-500/20 bg-rose-500/10 text-rose-400'}`}>
           {status.message}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-2">
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Business Name</span>
-          <input name="name" value={formState.name} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Tagline</span>
-          <input name="tagline" value={formState.tagline} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2 lg:col-span-2">
-          <span className="text-sm font-medium text-slate-200">Description</span>
-          <textarea name="description" value={formState.description} onChange={handleChange} rows="4" className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2 lg:col-span-2">
-          <span className="text-sm font-medium text-slate-200">About title</span>
-          <input name="aboutTitle" value={formState.aboutTitle || ''} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2 lg:col-span-2">
-          <span className="text-sm font-medium text-slate-200">About</span>
-          <textarea name="about" value={formState.about || ''} onChange={handleChange} rows="3" className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Mission</span>
-          <textarea name="mission" value={formState.mission || ''} onChange={handleChange} rows="3" className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Vision</span>
-          <textarea name="vision" value={formState.vision || ''} onChange={handleChange} rows="3" className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Phone</span>
-          <input name="phone" value={formState.phone} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">WhatsApp</span>
-          <input name="whatsapp" value={formState.whatsapp} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Email</span>
-          <input name="email" value={formState.email} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Address</span>
-          <input name="address" value={formState.address} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2">
-          <span className="text-sm font-medium text-slate-200">Business Hours</span>
-          <input name="hours" value={formState.hours} onChange={handleChange} className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-        <label className="space-y-2 lg:col-span-2">
-          <span className="text-sm font-medium text-slate-200">Footer Text</span>
-          <textarea name="footerText" value={formState.footerText} onChange={handleChange} rows="3" className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-        </label>
-
-        <div className="lg:col-span-2 mt-4 space-y-6 rounded-3xl border border-slate-700 bg-slate-800/50 p-6">
-          <h2 className="text-xl font-semibold text-white">Hero Section Design</h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-200">Hero Box 1 Image</span>
-              <select name="hero_image_1_id" value={formState.hero_image_1_id || ''} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500">
-                <option value="">Default Product</option>
-                {gallery.filter(g => g.media_type === 'image').map(img => (
-                  <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
-                ))}
-              </select>
+      <form onSubmit={handleSubmit} className="space-y-10">
+        
+        {/* Basic Info Section */}
+        <div>
+          <h2 className="mb-5 text-lg font-medium text-white">Basic Details</h2>
+          <div className="grid gap-5 sm:grid-cols-2">
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">Business Name</span>
+              <input name="name" value={formState.name} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
             </label>
-            <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-200">Hero Box 2 Image</span>
-              <select name="hero_image_2_id" value={formState.hero_image_2_id || ''} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500">
-                <option value="">Default Product</option>
-                {gallery.filter(g => g.media_type === 'image').map(img => (
-                  <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
-                ))}
-              </select>
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">Tagline</span>
+              <input name="tagline" value={formState.tagline} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
             </label>
-            <label className="space-y-2">
-              <span className="text-sm font-medium text-slate-200">Background Color</span>
-              <div className="flex gap-2">
-                <input type="color" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="h-12 w-12 cursor-pointer rounded-xl border border-slate-600 bg-transparent" />
-                <input type="text" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="w-full rounded-2xl border border-slate-600 bg-slate-900 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500" />
-              </div>
+            <label className="space-y-1.5 sm:col-span-2">
+              <span className="text-sm font-medium text-slate-300">Description</span>
+              <textarea name="description" value={formState.description} onChange={handleChange} rows="3" className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
             </label>
           </div>
         </div>
 
-        <div className="lg:col-span-2 space-y-4 rounded-[1.75rem] border border-slate-700 bg-slate-950 p-4">
-          <div className="flex items-center justify-between gap-4">
+        <hr className="border-white/5" />
+
+        {/* About Section */}
+        <div>
+          <h2 className="mb-5 text-lg font-medium text-white">About Section</h2>
+          <div className="grid gap-5">
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">About Title</span>
+              <input name="aboutTitle" value={formState.aboutTitle || ''} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">About Content</span>
+              <textarea name="about" value={formState.about || ''} onChange={handleChange} rows="3" className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <label className="space-y-1.5">
+                <span className="text-sm font-medium text-slate-300">Mission</span>
+                <textarea name="mission" value={formState.mission || ''} onChange={handleChange} rows="3" className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+              </label>
+              <label className="space-y-1.5">
+                <span className="text-sm font-medium text-slate-300">Vision</span>
+                <textarea name="vision" value={formState.vision || ''} onChange={handleChange} rows="3" className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <hr className="border-white/5" />
+
+        {/* Contact Info Section */}
+        <div>
+          <h2 className="mb-5 text-lg font-medium text-white">Contact & Location</h2>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">Phone</span>
+              <input name="phone" value={formState.phone} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">WhatsApp</span>
+              <input name="whatsapp" value={formState.whatsapp} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">Email</span>
+              <input name="email" value={formState.email} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+            <label className="space-y-1.5 sm:col-span-2 lg:col-span-3">
+              <span className="text-sm font-medium text-slate-300">Address</span>
+              <input name="address" value={formState.address} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+            <label className="space-y-1.5 sm:col-span-2 lg:col-span-3">
+              <span className="text-sm font-medium text-slate-300">Business Hours</span>
+              <input name="hours" value={formState.hours} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+          </div>
+        </div>
+
+        <hr className="border-white/5" />
+
+        {/* Branding & Footer Section */}
+        <div>
+          <h2 className="mb-5 text-lg font-medium text-white">Branding & Footer</h2>
+          <div className="grid gap-5">
+            <label className="space-y-1.5">
+              <span className="text-sm font-medium text-slate-300">Footer Text</span>
+              <textarea name="footerText" value={formState.footerText} onChange={handleChange} rows="2" className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            </label>
+            
+            <div className="rounded-2xl border border-white/5 bg-slate-800/20 p-5">
+              <h3 className="mb-4 text-sm font-medium text-slate-200">Hero Section Design</h3>
+              <div className="grid gap-5 sm:grid-cols-3">
+                <label className="space-y-1.5">
+                  <span className="text-xs text-slate-400">Hero Image 1</span>
+                  <select name="hero_image_1_id" value={formState.hero_image_1_id || ''} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2 text-white outline-none transition focus:border-emerald-500">
+                    <option value="">Default Product</option>
+                    {gallery.filter(g => g.media_type === 'image').map(img => (
+                      <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="space-y-1.5">
+                  <span className="text-xs text-slate-400">Hero Image 2</span>
+                  <select name="hero_image_2_id" value={formState.hero_image_2_id || ''} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2 text-white outline-none transition focus:border-emerald-500">
+                    <option value="">Default Product</option>
+                    {gallery.filter(g => g.media_type === 'image').map(img => (
+                      <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
+                    ))}
+                  </select>
+                </label>
+                <label className="space-y-1.5">
+                  <span className="text-xs text-slate-400">Background Color</span>
+                  <div className="flex gap-2">
+                    <input type="color" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="h-10 w-10 shrink-0 cursor-pointer rounded-lg border border-white/10 bg-transparent p-0" />
+                    <input type="text" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2 text-white outline-none transition focus:border-emerald-500" />
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr className="border-white/5" />
+
+        {/* Social Links Section */}
+        <div>
+          <div className="mb-5 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-slate-200">Social Links</p>
-              <p className="text-sm text-slate-400">Add links displayed in the footer.</p>
+              <h2 className="text-lg font-medium text-white">Social Links</h2>
+              <p className="text-sm text-slate-400">Manage social media links shown in the footer.</p>
             </div>
             <button
               type="button"
-              onClick={() =>
-                setFormState((prev) => ({
-                  ...prev,
-                  socialLinks: [...(prev.socialLinks || []), { platform: '', url: '' }]
-                }))
-              }
-              className="rounded-full bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-400"
+              onClick={() => setFormState((prev) => ({ ...prev, socialLinks: [...(prev.socialLinks || []), { platform: '', url: '' }] }))}
+              className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-2 text-sm font-medium text-emerald-400 transition hover:bg-emerald-500/20"
             >
-              Add link
+              + Add link
             </button>
           </div>
 
-          {(formState.socialLinks || []).map((link, index) => (
-            <div key={index} className="grid gap-4 md:grid-cols-[1fr_auto]">
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="space-y-2">
-                  <span className="text-sm text-slate-200">Platform</span>
-                  <input
-                    value={link.platform}
-                    onChange={(event) => {
-                      const updatedLinks = [...formState.socialLinks]
-                      updatedLinks[index] = { ...updatedLinks[index], platform: event.target.value }
-                      setFormState((prev) => ({ ...prev, socialLinks: updatedLinks }))
-                    }}
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500"
-                  />
-                </label>
-                <label className="space-y-2">
-                  <span className="text-sm text-slate-200">URL</span>
-                  <input
-                    value={link.url}
-                    onChange={(event) => {
-                      const updatedLinks = [...formState.socialLinks]
-                      updatedLinks[index] = { ...updatedLinks[index], url: event.target.value }
-                      setFormState((prev) => ({ ...prev, socialLinks: updatedLinks }))
-                    }}
-                    className="w-full rounded-3xl border border-slate-700 bg-slate-950 px-4 py-3 text-slate-100 outline-none transition focus:border-emerald-500"
-                  />
-                </label>
+          <div className="space-y-3">
+            {(formState.socialLinks || []).length === 0 && (
+              <p className="text-sm italic text-slate-500">No social links added yet.</p>
+            )}
+            {(formState.socialLinks || []).map((link, index) => (
+              <div key={index} className="flex flex-col gap-3 sm:flex-row sm:items-start">
+                <input
+                  placeholder="Platform (e.g. Instagram)"
+                  value={link.platform}
+                  onChange={(event) => {
+                    const updatedLinks = [...formState.socialLinks]
+                    updatedLinks[index] = { ...updatedLinks[index], platform: event.target.value }
+                    setFormState((prev) => ({ ...prev, socialLinks: updatedLinks }))
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 sm:w-1/3"
+                />
+                <input
+                  placeholder="https://..."
+                  value={link.url}
+                  onChange={(event) => {
+                    const updatedLinks = [...formState.socialLinks]
+                    updatedLinks[index] = { ...updatedLinks[index], url: event.target.value }
+                    setFormState((prev) => ({ ...prev, socialLinks: updatedLinks }))
+                  }}
+                  className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 sm:w-2/3"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    const updatedLinks = (formState.socialLinks || []).filter((_, itemIndex) => itemIndex !== index)
+                    setFormState((prev) => ({ ...prev, socialLinks: updatedLinks }))
+                  }}
+                  className="rounded-xl border border-rose-500/20 bg-rose-500/10 px-4 py-2.5 text-sm font-medium text-rose-400 transition hover:bg-rose-500/20"
+                >
+                  Remove
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const updatedLinks = (formState.socialLinks || []).filter((_, itemIndex) => itemIndex !== index)
-                  setFormState((prev) => ({ ...prev, socialLinks: updatedLinks }))
-                }}
-                className="rounded-full bg-rose-600 px-4 py-3 text-sm font-medium text-white transition hover:bg-rose-500"
-              >
-                Remove
-              </button>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <button type="submit" disabled={saving} className="lg:col-span-2 inline-flex items-center justify-center rounded-full bg-emerald-500 px-6 py-3 text-base font-semibold text-white transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60">
-          {saving ? 'Saving…' : 'Save Business Settings'}
-        </button>
+        {/* Submit Button */}
+        <div className="flex justify-end pt-4">
+          <button type="submit" disabled={saving} className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-8 py-3 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60">
+            {saving ? 'Saving changes...' : 'Save Settings'}
+          </button>
+        </div>
       </form>
     </div>
   )
