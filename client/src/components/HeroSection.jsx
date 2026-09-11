@@ -48,7 +48,7 @@ function HeroSection({ businessInfo, products = [] }) {
           <div className="h-full w-full overflow-hidden rounded-[1.75rem] bg-white/10 p-3 backdrop-blur-sm">
             <div className="relative h-full w-full overflow-hidden rounded-[1.35rem] shadow-inner shadow-black/10">
               <FallbackImage 
-                src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" 
+                src={heroImageUrl} 
                 alt="Delicious homemade food" 
                 className="h-full w-full object-cover" 
                 fallbackClassName="h-full"
