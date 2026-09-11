@@ -43,7 +43,6 @@ CREATE TABLE IF NOT EXISTS public.business (
   "footerText"  text,
   "socialLinks" jsonb not null default '[]'::jsonb,
   hero_image_1_id bigint,
-  hero_image_2_id bigint,
   hero_bg_color text not null default '#26351c',
   created_at    timestamptz not null default now()
 );
@@ -152,7 +151,6 @@ SET actual_price = coalesce(actual_price, price),
 WHERE actual_price IS NULL OR current_price IS NULL;
 
 ALTER TABLE public.business ADD COLUMN IF NOT EXISTS hero_image_1_id bigint references public.gallery(id) on delete set null;
-ALTER TABLE public.business ADD COLUMN IF NOT EXISTS hero_image_2_id bigint references public.gallery(id) on delete set null;
 ALTER TABLE public.business ADD COLUMN IF NOT EXISTS hero_bg_color text not null default '#26351c';
 
 -- 4. ROW LEVEL SECURITY
