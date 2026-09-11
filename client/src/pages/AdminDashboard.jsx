@@ -15,7 +15,7 @@ const navItems = [
 function AdminDashboard() {
   return (
     <div className="grid min-w-0 gap-5 lg:grid-cols-[220px_minmax(0,1fr)] lg:items-start">
-      <nav className="flex gap-1 overflow-x-auto rounded-2xl border border-white/10 bg-[#2b3325]/95 p-2 shadow-xl shadow-black/15 backdrop-blur-md lg:flex-col">
+      <nav className="sticky top-28 z-30 flex gap-1 overflow-x-auto rounded-2xl border border-white/10 bg-[#2b3325]/95 p-2 shadow-xl shadow-black/15 backdrop-blur-md lg:flex-col">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
