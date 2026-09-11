@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { createProduct, deleteProduct, fetchCategories, fetchProducts, updateProduct, uploadImage } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ImagePicker from '../components/ImagePicker'

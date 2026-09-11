@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { createCategory, deleteCategory, fetchCategories, updateCategory, uploadImage } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ImagePicker from '../components/ImagePicker'
@@ -15,6 +16,7 @@ const initialForm = {
 }
 
 function AdminCategories() {
+  const location = useLocation()
   const [categories, setCategories] = useState([])
   const [form, setForm] = useState(initialForm)
   const [editing, setEditing] = useState(false)

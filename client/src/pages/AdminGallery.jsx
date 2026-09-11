@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 import { createGalleryItem, deleteGalleryItem, fetchGalleryItems, updateGalleryItem, uploadImage } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
 import ImagePicker from '../components/ImagePicker'
+import StatusBanner from '../components/StatusBanner'
 
 const initialForm = {
   title: '',
@@ -13,6 +15,7 @@ const initialForm = {
 }
 
 function AdminGallery() {
+  const location = useLocation()
   const [gallery, setGallery] = useState([])
   const [form, setForm] = useState(initialForm)
   const [editing, setEditing] = useState(false)
