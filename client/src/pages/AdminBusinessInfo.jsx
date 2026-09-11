@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import { fetchBusinessInfo, updateBusinessInfo, fetchGalleryItems } from '../services/api'
+import { fetchBusinessInfo, updateBusinessInfo, fetchGalleryItems, uploadImage } from '../services/api'
 import LoadingSpinner from '../components/LoadingSpinner'
+import ImagePicker from '../components/ImagePicker'
 
 const emptyBusiness = {
   name: '',
@@ -20,6 +21,7 @@ const emptyBusiness = {
   socialLinks: [],
   hero_image_1_id: '',
   hero_image_2_id: '',
+  heroImageUrl1: '',
   hero_bg_color: '#26351c'
 }
 
@@ -185,6 +187,10 @@ function AdminBusinessInfo() {
               <span className="text-sm font-medium text-slate-300">Footer Text</span>
               <textarea name="footerText" value={formState.footerText} onChange={handleChange} rows="2" className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
             </label>
+            <div className="sm:col-span-2">
+              <span className="mb-2 block text-sm font-medium text-slate-300">Hero Section Image</span>
+              <ImagePicker name="heroImageUrl1" value={formState.heroImageUrl1} onChange={handleChange} onUpload={uploadImage} />
+            </div>
           </div>
         </div>
 

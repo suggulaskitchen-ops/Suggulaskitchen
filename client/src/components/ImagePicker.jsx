@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-function ImagePicker({ value, onChange, onUpload }) {
+function ImagePicker({ name = 'imageUrl', value, onChange, onUpload }) {
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
 
@@ -12,7 +12,7 @@ function ImagePicker({ value, onChange, onUpload }) {
     setUploadError('')
     try {
       const url = await onUpload(file)
-      onChange({ target: { name: 'imageUrl', value: url } })
+      onChange({ target: { name, value: url } })
     } catch (error) {
       setUploadError(error?.message || 'Image upload failed. Check the gallery bucket and Storage policies.')
     } finally {

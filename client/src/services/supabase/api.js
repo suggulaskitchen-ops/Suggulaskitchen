@@ -250,7 +250,7 @@ export async function updateBusinessInfo(payload) {
     hours: payload.hours || null,
     footerText: payload.footerText || null,
     socialLinks: toArray(payload.socialLinks),
-    hero_image_1_id: payload.hero_image_1_id || null,
+    hero_image_1_id: payload.heroImageUrl1 ? await resolveGalleryId(payload.heroImageUrl1) : payload.hero_image_1_id || null,
     hero_image_2_id: payload.hero_image_2_id || null,
     hero_bg_color: payload.hero_bg_color || '#26351c'
   }
