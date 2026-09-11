@@ -29,6 +29,10 @@ AS $$
   );
 $$;
 
+-- Secure the SECURITY DEFINER function
+REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated, service_role;
+
 -- 2. TABLE DEFINITIONS
 
 CREATE TABLE IF NOT EXISTS public.business (
@@ -233,7 +237,8 @@ INSERT INTO storage.buckets (id, name, public) VALUES ('gallery', 'gallery', tru
 
 
 DROP POLICY IF EXISTS "Public can view gallery images" ON storage.objects;
-CREATE POLICY "Public can view gallery images" ON storage.objects FOR SELECT TO anon, authenticated USING (bucket_id = 'gallery');
+DROP POLICY IF EXISTS "Admins can list gallery images" ON storage.objects;
+CREATE POLICY "Admins can list gallery images" ON storage.objects FOR SELECT TO authenticated USING (bucket_id = 'gallery' AND public.is_admin());
 DROP POLICY IF EXISTS "Admins can upload gallery images" ON storage.objects;
 CREATE POLICY "Admins can upload gallery images" ON storage.objects FOR INSERT TO authenticated WITH CHECK (bucket_id = 'gallery' AND public.is_admin());
 DROP POLICY IF EXISTS "Admins can update gallery images" ON storage.objects;
@@ -253,6 +258,7 @@ CREATE OR REPLACE FUNCTION public.recalculate_order_total()
 RETURNS trigger
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = public
 AS \$\$
 DECLARE
   item_record jsonb;
@@ -281,6 +287,9 @@ BEGIN
   RETURN NEW;
 END;
 \$\$;
+
+-- Secure the SECURITY DEFINER function
+REVOKE EXECUTE ON FUNCTION public.recalculate_order_total() FROM PUBLIC;
 
 DROP TRIGGER IF EXISTS enforce_secure_order_total ON public.orders;
 CREATE TRIGGER enforce_secure_order_total
