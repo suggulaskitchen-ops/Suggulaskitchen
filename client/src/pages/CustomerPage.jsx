@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { useLocation } from 'react-router-dom'
-import { Clock3, Leaf, ShoppingCart, UtensilsCrossed } from 'lucide-react'
+import { Clock3, Leaf, ShoppingCart, UtensilsCrossed, Search, X } from 'lucide-react'
 import { useAppContext } from '../context/AppContext'
 import { useFetchAppData } from '../hooks/useFetchAppData'
 import AboutSection from '../components/AboutSection'
@@ -20,6 +20,7 @@ function CustomerPage() {
   const [cartItems, setCartItems] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
   const [navbarContainer, setNavbarContainer] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('')
   const location = useLocation()
 
   useEffect(() => {
@@ -72,22 +73,59 @@ function CustomerPage() {
 
   const products = appData.products || []
   const categories = appData.categories || []
-  const filteredProducts = useMemo(
-    () => (selectedCategory ? products.filter((product) => product.category === selectedCategory) : products),
-    [products, selectedCategory]
-  )
+  const filteredProducts = useMemo(() => {
+    let result = products
+    if (selectedCategory) {
+      result = result.filter((product) => product.category === selectedCategory)
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase()
+      result = result.filter((product) => 
+        product.name?.toLowerCase().includes(q) || 
+        product.shortDescription?.toLowerCase().includes(q) || 
+        product.ingredients?.toLowerCase().includes(q) ||
+        product.category?.toLowerCase().includes(q)
+      )
+    }
+    return result
+  }, [products, selectedCategory, searchQuery])
 
   return (
     <main className="min-h-screen bg-[#fffaf3] text-[#26351c]">
       {navbarContainer && createPortal(
-        <button
-          type="button"
-          onClick={() => setCartOpen((prev) => !prev)}
-          className="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 hover:bg-rose-700 active:scale-95"
-        >
-          <ShoppingCart className="h-5 w-5" />
-          Cart {cartItems.length > 0 && `(${cartItems.length})`}
-        </button>,
+        <div className="flex items-center gap-2 sm:gap-4">
+          <div className="relative flex items-center">
+            <Search className="absolute left-2.5 h-4 w-4 text-gray-400" />
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                if (e.target.value) {
+                  document.getElementById('products')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              className="w-24 rounded-full border border-gray-200 bg-white/80 py-1.5 pl-8 pr-8 text-sm focus:border-rose-300 focus:outline-none focus:ring-2 focus:ring-rose-100 transition-all focus:w-40 sm:w-40 sm:focus:w-64"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          <button
+            type="button"
+            onClick={() => setCartOpen((prev) => !prev)}
+            className="flex items-center gap-2 rounded-xl bg-rose-600 px-3 py-1.5 sm:px-4 sm:py-2 text-sm font-semibold text-white shadow-sm transition-all hover:scale-105 hover:bg-rose-700 active:scale-95"
+          >
+            <ShoppingCart className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="hidden sm:inline">Cart</span> {cartItems.length > 0 && `(${cartItems.length})`}
+          </button>
+        </div>,
         navbarContainer
       )}
       <div className="mx-auto flex max-w-7xl flex-col gap-6 px-1 py-2 sm:gap-8 sm:px-2">
