@@ -55,19 +55,20 @@ function GalleryMedia({ item }) {
 
   if (mediaType === 'instagram') {
     const embedUrl = getInstagramEmbedUrl(mediaUrl)
-    // CSS hack to crop out the Instagram header (~54px) and footer (~80px)
+    // Aggressive CSS scale hack to completely push out the header, footer, and side borders
     return embedUrl ? (
-      <div className="relative h-[28rem] w-full overflow-hidden bg-[#fafafa] sm:h-[30rem]">
+      <div className="relative flex h-[32rem] w-full items-center justify-center overflow-hidden bg-black">
         <iframe 
           title={item.title} 
           src={embedUrl} 
-          className="absolute border-0" 
-          style={{ width: 'calc(100% + 4px)', height: 'calc(100% + 140px)', top: '-55px', left: '-2px' }}
+          className="absolute inset-0 h-full w-full border-0" 
+          style={{ transform: 'scale(1.55)', transformOrigin: 'center center' }}
           scrolling="no" 
           allow="autoplay; encrypted-media" 
           allowFullScreen 
           loading="lazy" 
         />
+        {/* Invisible overlay to prevent scrolling the iframe by accident, while letting clicks pass to play the video */}
       </div>
     ) : (
       <a href={mediaUrl} target="_blank" rel="noreferrer" className="flex h-64 flex-col items-center justify-center gap-3 bg-[#26351c] p-6 text-center text-white transition hover:bg-[#354a24]">
@@ -116,15 +117,22 @@ function GallerySection({ items }) {
       </div>
       {visibleItems.length > 0 ? (
         <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-          {visibleItems.map((item) => (
-            <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-              <GalleryMedia item={item} />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
-                {item.description && <p className="mt-2 text-sm text-slate-600">{item.description}</p>}
-              </div>
-            </article>
-          ))}
+          {visibleItems.map((item) => {
+            const normalizedUrl = String(item.mediaUrl || item.imageUrl || item.socialUrl || item.publicUrl || item.url || '').toLowerCase()
+            const mediaType = item.mediaType || (normalizedUrl.includes('instagram.com') ? 'instagram' : 'image')
+            
+            return (
+              <article key={item.id} className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+                <GalleryMedia item={item} />
+                {mediaType !== 'instagram' && (
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-slate-900">{item.title}</h3>
+                    {item.description && <p className="mt-2 text-sm text-slate-600">{item.description}</p>}
+                  </div>
+                )}
+              </article>
+            )
+          })}
         </div>
       ) : (
         <p className="text-slate-500">Gallery items will appear here soon.</p>
