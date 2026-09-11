@@ -185,37 +185,6 @@ function AdminBusinessInfo() {
               <span className="text-sm font-medium text-slate-300">Footer Text</span>
               <textarea name="footerText" value={formState.footerText} onChange={handleChange} rows="2" className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
             </label>
-            
-            <div className="rounded-2xl border border-white/5 bg-slate-800/20 p-5">
-              <h3 className="mb-4 text-sm font-medium text-slate-200">Hero Section Design</h3>
-              <div className="grid gap-5 sm:grid-cols-3">
-                <label className="space-y-1.5">
-                  <span className="text-xs text-slate-400">Hero Image 1</span>
-                  <select name="hero_image_1_id" value={formState.hero_image_1_id || ''} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2 text-white outline-none transition focus:border-emerald-500">
-                    <option value="">Default Product</option>
-                    {gallery.filter(g => g.media_type === 'image').map(img => (
-                      <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className="space-y-1.5">
-                  <span className="text-xs text-slate-400">Hero Image 2</span>
-                  <select name="hero_image_2_id" value={formState.hero_image_2_id || ''} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2 text-white outline-none transition focus:border-emerald-500">
-                    <option value="">Default Product</option>
-                    {gallery.filter(g => g.media_type === 'image').map(img => (
-                      <option key={img.id} value={img.id}>{img.title || `Image ${img.id}`}</option>
-                    ))}
-                  </select>
-                </label>
-                <label className="space-y-1.5">
-                  <span className="text-xs text-slate-400">Background Color</span>
-                  <div className="flex gap-2">
-                    <input type="color" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="h-10 w-10 shrink-0 cursor-pointer rounded-lg border border-white/10 bg-transparent p-0" />
-                    <input type="text" name="hero_bg_color" value={formState.hero_bg_color || '#26351c'} onChange={handleChange} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2 text-white outline-none transition focus:border-emerald-500" />
-                  </div>
-                </label>
-              </div>
-            </div>
           </div>
         </div>
 
