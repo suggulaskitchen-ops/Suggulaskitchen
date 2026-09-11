@@ -52,12 +52,12 @@ function OrderItemsCell({ items, orderTotal }) {
   const total = Number(orderTotal) > 0 ? Number(orderTotal) : calculatedTotal
 
   return <>
-    <button type="button" onClick={() => setOpen(true)} className="rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-400/20">View {parsedItems.length} items</button>
+    <button type="button" onClick={() => setOpen(true)} className="rounded-full border border-emerald-400/20 bg-emerald-400/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 transition hover:bg-emerald-400/20">View {parsedItems.length} items</button>
     {open && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
-        <div className="mb-5 flex items-start justify-between"><div><p className="text-xs uppercase tracking-[0.25em] text-emerald-300">Order details</p><h2 className="mt-1 text-2xl font-semibold text-white">Items in this order</h2></div><button type="button" onClick={() => setOpen(false)} className="text-2xl text-slate-400" aria-label="Close">×</button></div>
-        <div className="space-y-2">{parsedItems.map((item, index) => <div key={`${item.product_id || item.name}-${index}`} className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 px-4 py-3"><div><p className="font-medium text-slate-100">{item.name || `Product ${item.product_id}`}</p><p className="text-xs text-slate-500">₹{Number(item.price || 0).toFixed(2)} each</p></div><div className="text-right"><p className="font-semibold text-emerald-300">x{item.quantity || 1}</p><p className="text-xs text-slate-400">₹{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}</p></div></div>)}</div>
-        <div className="mt-5 flex justify-between border-t border-slate-700 pt-4 font-semibold text-white"><span>Total</span><span className="text-emerald-300">₹{total.toFixed(2)}</span></div>
+      <div className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
+        <div className="mb-5 flex items-start justify-between"><div><p className="text-xs font-medium uppercase tracking-wider text-emerald-400">Order details</p><h2 className="mt-1 text-2xl font-semibold text-white">Items in this order</h2></div><button type="button" onClick={() => setOpen(false)} className="text-2xl text-slate-400 hover:text-white" aria-label="Close">×</button></div>
+        <div className="space-y-2">{parsedItems.map((item, index) => <div key={`${item.product_id || item.name}-${index}`} className="flex items-center justify-between rounded-xl border border-white/5 bg-slate-800/30 px-4 py-3"><div><p className="font-medium text-slate-100">{item.name || `Product ${item.product_id}`}</p><p className="text-xs text-slate-400">₹{Number(item.price || 0).toFixed(2)} each</p></div><div className="text-right"><p className="font-medium text-emerald-400">x{item.quantity || 1}</p><p className="text-xs text-slate-400">₹{(Number(item.price || 0) * Number(item.quantity || 1)).toFixed(2)}</p></div></div>)}</div>
+        <div className="mt-5 flex justify-between border-t border-white/10 pt-4 font-semibold text-white"><span>Total</span><span className="text-emerald-400">₹{total.toFixed(2)}</span></div>
       </div>
     </div>}
   </>
@@ -240,89 +240,161 @@ function AdminDatabaseTable({ table }) {
 
   const changeQuantity = (productId, amount) => setSelectedItems((current) => current.map((item) => item.product_id === productId ? { ...item, quantity: Math.max(1, item.quantity + amount) } : item))
 
-  if (loading) return <div className="rounded-[2rem] bg-slate-900/90 p-8 text-slate-300">Loading {config.title.toLowerCase()}...</div>
+  if (loading) return <div className="mx-auto max-w-5xl py-10 text-slate-400">Loading {config.title.toLowerCase()}...</div>
 
   return (
-    <section className="space-y-6 rounded-[2rem] bg-slate-900/90 p-8 text-slate-100 shadow-2xl shadow-black/20">
-      <div>
-        <p className="text-sm uppercase tracking-[0.35em] text-emerald-400">Database table</p>
-        <h1 className="mt-3 text-3xl font-semibold">{config.title}</h1>
-        <p className="mt-2 text-slate-400">{config.description}</p>
+    <section className="mx-auto max-w-5xl space-y-8 pb-10">
+      <div className="flex items-end justify-between border-b border-white/10 pb-6">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight text-white">{config.title}</h1>
+          <p className="mt-2 text-sm text-slate-400">{config.description}</p>
+        </div>
+        <span className="hidden rounded-full border border-white/10 bg-slate-800/50 px-3 py-1.5 text-xs font-medium uppercase tracking-wider text-slate-400 sm:inline-block">Database Table</span>
       </div>
 
-      {error && <div className="flex items-start justify-between gap-4 rounded-2xl bg-rose-500/15 p-4 text-rose-200"><p>{error}</p><button type="button" onClick={() => setError('')} className="text-sm font-semibold">Dismiss</button></div>}
+      {error && (
+        <div className="flex items-start justify-between gap-4 rounded-xl bg-rose-500/10 p-4 text-sm text-rose-400 border border-rose-500/20">
+          <p>{error}</p>
+          <button type="button" onClick={() => setError('')} className="font-medium hover:text-rose-300">Dismiss</button>
+        </div>
+      )}
 
       {table === 'customers' && (
-        <form onSubmit={handleCreate} className="grid gap-4 rounded-[1.5rem] border border-slate-800 bg-slate-950 p-5 md:grid-cols-3">
-          <h2 className="text-xl font-semibold md:col-span-3">Add customer</h2>
-          <input required placeholder="Customer name" value={customerForm.name} onChange={(event) => setCustomerForm({ ...customerForm, name: event.target.value })} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-          <input required type="tel" placeholder="Phone" value={customerForm.phone} onChange={(event) => setCustomerForm({ ...customerForm, phone: event.target.value })} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-          <input required placeholder="Address" value={customerForm.address} onChange={(event) => setCustomerForm({ ...customerForm, address: event.target.value })} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-          <button type="submit" className="rounded-xl bg-emerald-500 px-4 py-2 font-semibold text-white md:col-span-3">Save customer</button>
+        <form onSubmit={handleCreate} className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-3">
+            <h2 className="text-lg font-medium text-white md:col-span-3">Add customer</h2>
+            <input required placeholder="Customer name" value={customerForm.name} onChange={(event) => setCustomerForm({ ...customerForm, name: event.target.value })} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            <input required type="tel" placeholder="Phone" value={customerForm.phone} onChange={(event) => setCustomerForm({ ...customerForm, phone: event.target.value })} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+            <input required placeholder="Address" value={customerForm.address} onChange={(event) => setCustomerForm({ ...customerForm, address: event.target.value })} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+          </div>
+          <div className="flex justify-end pt-2">
+            <button type="submit" className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-500">Save customer</button>
+          </div>
         </form>
       )}
 
       {(table === 'orders' || table === 'shipping') && (
-        <form onSubmit={handleCreate} className="grid gap-4 rounded-[1.5rem] border border-slate-800 bg-slate-950 p-5 md:grid-cols-2">
-          <h2 className="text-xl font-semibold md:col-span-2">{editingShippingId ? 'Update shipping record' : `Add ${table === 'orders' ? 'order' : 'shipping record'}`}</h2>
-          <div ref={customerSearchRef} className="relative">
-            <input required value={customerSearch} placeholder="Search customer by name or phone" onFocus={() => setCustomerDropdownOpen(true)} onChange={(event) => { setCustomerSearch(event.target.value); updateForm('customer_id', ''); setCustomerDropdownOpen(true) }} className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 placeholder:text-slate-500" />
-            {customerDropdownOpen && !form.customer_id && <div className="absolute z-20 mt-2 max-h-56 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-1 shadow-2xl">
-              {matchingCustomers.map((customer) => <button key={customer.id} type="button" onClick={() => selectCustomer(customer)} className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800">{customer.name} <span className="text-slate-500">{customer.phone}</span></button>)}
-              {matchingCustomers.length === 0 && <p className="px-3 py-2 text-sm text-slate-500">No matching customer.</p>}
-            </div>}
-          </div>
+        <form onSubmit={handleCreate} className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <h2 className="text-lg font-medium text-white md:col-span-2">{editingShippingId ? 'Update shipping record' : `Add ${table === 'orders' ? 'order' : 'shipping record'}`}</h2>
+            
+            <div ref={customerSearchRef} className="relative">
+              <input required value={customerSearch} placeholder="Search customer by name or phone" onFocus={() => setCustomerDropdownOpen(true)} onChange={(event) => { setCustomerSearch(event.target.value); updateForm('customer_id', ''); setCustomerDropdownOpen(true) }} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder:text-slate-500" />
+              {customerDropdownOpen && !form.customer_id && <div className="absolute z-20 mt-2 max-h-56 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-1 shadow-2xl">
+                {matchingCustomers.map((customer) => <button key={customer.id} type="button" onClick={() => selectCustomer(customer)} className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800">{customer.name} <span className="text-slate-500">{customer.phone}</span></button>)}
+                {matchingCustomers.length === 0 && <p className="px-3 py-2 text-sm text-slate-500">No matching customer.</p>}
+              </div>}
+            </div>
 
-          {table === 'orders' ? (
-            <>
-              <div className="space-y-3 md:col-span-2">
-                <p className="text-sm font-medium text-slate-300">Choose category</p>
-                <select value={orderCategory} onChange={(event) => setOrderCategory(event.target.value)} className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100">
-                  <option value="">All categories</option>
-                  {categories.filter((category) => category.status !== 'hidden').map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-                </select>
-                <p className="text-sm font-medium text-slate-300">Choose products</p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {visibleProducts.map((product) => {
-                    const selected = selectedItems.some((item) => item.product_id === product.id)
-                    const price = Number(product.current_price ?? product.price ?? product.actual_price ?? 0)
-                    return <label key={product.id} className="flex items-center gap-3 rounded-xl border border-slate-800 bg-slate-900 p-3 text-sm text-slate-200"><input type="checkbox" checked={selected} onChange={(event) => toggleProduct(product, event.target.checked)} className="h-4 w-4 accent-emerald-500" /><span>{product.name} <span className="text-xs text-slate-500">₹{price}</span></span></label>
-                  })}
+            {table === 'orders' ? (
+              <>
+                <div className="space-y-4 md:col-span-2">
+                  <div className="space-y-1.5">
+                    <span className="text-sm font-medium text-slate-300">Choose category</span>
+                    <select value={orderCategory} onChange={(event) => setOrderCategory(event.target.value)} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                      <option value="">All categories</option>
+                      {categories.filter((category) => category.status !== 'hidden').map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <span className="text-sm font-medium text-slate-300">Choose products</span>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {visibleProducts.map((product) => {
+                        const selected = selectedItems.some((item) => item.product_id === product.id)
+                        const price = Number(product.current_price ?? product.price ?? product.actual_price ?? 0)
+                        return <label key={product.id} className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-900/50 p-3 text-sm text-slate-300 transition hover:bg-slate-800/50"><input type="checkbox" checked={selected} onChange={(event) => toggleProduct(product, event.target.checked)} className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500" /><span>{product.name} <span className="text-xs text-slate-500">₹{price}</span></span></label>
+                      })}
+                    </div>
+                    {visibleProducts.length === 0 && <p className="text-sm text-slate-500">No products found for this category.</p>}
+                  </div>
                 </div>
-                {visibleProducts.length === 0 && <p className="text-sm text-slate-500">No products found for this category.</p>}
-              </div>
-              {selectedItems.length > 0 && <div className="space-y-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-3 md:col-span-2"><p className="text-sm font-medium text-emerald-200">Added products</p>{selectedItems.map((item) => <div key={item.product_id} className="flex items-center justify-between gap-3 rounded-lg bg-slate-900 px-3 py-2"><span className="truncate text-sm text-slate-200">{item.name}</span><div className="flex items-center gap-2"><button type="button" onClick={() => changeQuantity(item.product_id, -1)} className="h-7 w-7 rounded-md border border-slate-700">-</button><span className="w-6 text-center text-sm">{item.quantity}</span><button type="button" onClick={() => changeQuantity(item.product_id, 1)} className="h-7 w-7 rounded-md border border-slate-700">+</button><button type="button" onClick={() => setSelectedItems((current) => current.filter((entry) => entry.product_id !== item.product_id))} className="ml-2 text-xs text-rose-300">Remove</button></div></div>)}<p className="text-right text-sm font-semibold text-emerald-300">Total: ₹{orderTotal.toFixed(2)}</p></div>}
-              <select value={form.status} onChange={(event) => updateForm('status', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="preparing">Preparing</option></select>
-            </>
-          ) : (
-            <>
-              <div ref={orderSearchRef} className="relative">
-                <input required value={orderSearch} placeholder="Search order by ID, customer, or status" onFocus={() => setOrderDropdownOpen(true)} onChange={(event) => { setOrderSearch(event.target.value); updateForm('order_id', ''); setOrderDropdownOpen(true) }} className="w-full rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100 placeholder:text-slate-500" />
-                {orderDropdownOpen && !form.order_id && <div className="absolute z-20 mt-2 max-h-56 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-1 shadow-2xl">
-                  {matchingOrders.map((order) => <button key={order.id} type="button" onClick={() => selectOrder(order)} className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800">Order #{order.id} <span className="text-slate-500">{order.customer?.name || order.customers?.name || 'Customer'} · {order.status}</span></button>)}
-                  {matchingOrders.length === 0 && <p className="px-3 py-2 text-sm text-slate-500">No matching order.</p>}
-                </div>}
-              </div>
-              <input type="text" placeholder="Delivery partner name" value={form.delivery_partner_name || ''} onChange={(event) => updateForm('delivery_partner_name', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-              
-              <div className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-3 text-slate-100">
-                <span className="shrink-0 text-sm font-medium text-slate-500">Ship date</span>
-                <input type="date" value={form.shipping_date} onChange={(event) => updateForm('shipping_date', event.target.value)} className="w-full bg-transparent py-2 outline-none" />
-              </div>
-              <div className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-3 text-slate-100">
-                <span className="shrink-0 text-sm font-medium text-slate-500">Delivery</span>
-                <input type="date" value={form.delivery_date} onChange={(event) => updateForm('delivery_date', event.target.value)} className="w-full bg-transparent py-2 outline-none" />
-              </div>
+                {selectedItems.length > 0 && <div className="space-y-2 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 md:col-span-2"><p className="text-sm font-medium text-emerald-300">Added products</p>{selectedItems.map((item) => <div key={item.product_id} className="flex items-center justify-between gap-3 rounded-lg bg-slate-900/50 px-3 py-2"><span className="truncate text-sm text-slate-200">{item.name}</span><div className="flex items-center gap-2"><button type="button" onClick={() => changeQuantity(item.product_id, -1)} className="flex h-7 w-7 items-center justify-center rounded border border-white/10 hover:bg-white/5">-</button><span className="w-6 text-center text-sm">{item.quantity}</span><button type="button" onClick={() => changeQuantity(item.product_id, 1)} className="flex h-7 w-7 items-center justify-center rounded border border-white/10 hover:bg-white/5">+</button><button type="button" onClick={() => setSelectedItems((current) => current.filter((entry) => entry.product_id !== item.product_id))} className="ml-2 text-xs font-medium text-rose-400 hover:text-rose-300">Remove</button></div></div>)}<p className="pt-2 text-right text-sm font-semibold text-emerald-400">Total: ₹{orderTotal.toFixed(2)}</p></div>}
+                <div className="space-y-1.5 md:col-span-2">
+                  <span className="text-sm font-medium text-slate-300">Status</span>
+                  <select value={form.status} onChange={(event) => updateForm('status', event.target.value)} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="preparing">Preparing</option></select>
+                </div>
+              </>
+            ) : (
+              <>
+                <div ref={orderSearchRef} className="relative">
+                  <input required value={orderSearch} placeholder="Search order by ID, customer, or status" onFocus={() => setOrderDropdownOpen(true)} onChange={(event) => { setOrderSearch(event.target.value); updateForm('order_id', ''); setOrderDropdownOpen(true) }} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 placeholder:text-slate-500" />
+                  {orderDropdownOpen && !form.order_id && <div className="absolute z-20 mt-2 max-h-56 w-full overflow-auto rounded-xl border border-slate-700 bg-slate-900 p-1 shadow-2xl">
+                    {matchingOrders.map((order) => <button key={order.id} type="button" onClick={() => selectOrder(order)} className="block w-full rounded-lg px-3 py-2 text-left text-sm text-slate-200 hover:bg-slate-800">Order #{order.id} <span className="text-slate-500">{order.customer?.name || order.customers?.name || 'Customer'} · {order.status}</span></button>)}
+                    {matchingOrders.length === 0 && <p className="px-3 py-2 text-sm text-slate-500">No matching order.</p>}
+                  </div>}
+                </div>
+                <input type="text" placeholder="Delivery partner name" value={form.delivery_partner_name || ''} onChange={(event) => updateForm('delivery_partner_name', event.target.value)} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+                
+                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-900/50 px-4 py-1 text-slate-100 transition focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500">
+                  <span className="shrink-0 text-sm font-medium text-slate-400">Ship date</span>
+                  <input type="date" value={form.shipping_date} onChange={(event) => updateForm('shipping_date', event.target.value)} className="w-full bg-transparent py-1.5 outline-none" />
+                </div>
+                <div className="flex items-center gap-3 rounded-xl border border-white/10 bg-slate-900/50 px-4 py-1 text-slate-100 transition focus-within:border-emerald-500 focus-within:ring-1 focus-within:ring-emerald-500">
+                  <span className="shrink-0 text-sm font-medium text-slate-400">Delivery</span>
+                  <input type="date" value={form.delivery_date} onChange={(event) => updateForm('delivery_date', event.target.value)} className="w-full bg-transparent py-1.5 outline-none" />
+                </div>
 
-              <select value={form.delivery_status} onChange={(event) => updateForm('delivery_status', event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100"><option value="pending">Pending</option><option value="assigned">Assigned</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option></select>
-              <input type="url" placeholder="Tracking link" value={form.tracking_link || ''} onChange={(event) => updateForm('tracking_link', event.target.value)} className="md:col-span-2 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100" />
-            </>
-          )}
-          <button type="submit" disabled={(table === 'orders' && selectedItems.length === 0) || !form.customer_id} className="md:col-span-2 mt-2 rounded-xl bg-emerald-500 px-4 py-2 font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50">{editingShippingId ? 'Update shipping' : 'Save record'}</button>
+                <select value={form.delivery_status} onChange={(event) => updateForm('delivery_status', event.target.value)} className="w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"><option value="pending">Pending</option><option value="assigned">Assigned</option><option value="out_for_delivery">Out for delivery</option><option value="delivered">Delivered</option></select>
+                <input type="url" placeholder="Tracking link" value={form.tracking_link || ''} onChange={(event) => updateForm('tracking_link', event.target.value)} className="md:col-span-2 w-full rounded-xl border border-white/10 bg-slate-900/50 px-4 py-2.5 text-white outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500" />
+              </>
+            )}
+          </div>
+          <div className="flex justify-end pt-2">
+            <button type="submit" disabled={(table === 'orders' && selectedItems.length === 0) || !form.customer_id} className="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-500 disabled:cursor-not-allowed disabled:opacity-60">{editingShippingId ? 'Update shipping' : 'Save record'}</button>
+          </div>
         </form>
       )}
 
-      <div className="overflow-x-auto rounded-[1.5rem] border border-slate-800 bg-slate-950"><table className="min-w-full text-left text-sm"><thead className="bg-slate-900 text-slate-400"><tr>{config.columns.map(([, label]) => <th key={label} className="whitespace-nowrap px-5 py-4">{label}</th>)}{config.orderStatus && <th className="whitespace-nowrap px-5 py-4">Update status</th>}</tr></thead><tbody className="divide-y divide-slate-800">{records.map((record) => <tr key={record.id} className="align-top">{config.columns.map(([path, label]) => <td key={label} className="max-w-xs px-5 py-4 text-slate-300">{path === '__edit' ? <button type="button" onClick={() => editShipping(record)} className="rounded-lg bg-emerald-500/15 px-3 py-2 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/25">Edit</button> : path === 'items' ? <OrderItemsCell items={record.items} orderTotal={record.total} /> : path === 'tracking_link' && record.tracking_link ? <a href={record.tracking_link} target="_blank" rel="noreferrer" className="max-w-40 truncate text-emerald-300 underline">Open tracking</a> : getValue(record, path)}</td>)}{config.orderStatus && <td className="px-5 py-4"><select value={record.status || 'pending'} disabled={savingId === record.id} onChange={(event) => changeOrderStatus(record.id, event.target.value)} className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-slate-100"><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="preparing">Preparing</option><option value="shipped">Shipped</option><option value="delivered">Delivered</option><option value="cancelled">Cancelled</option></select></td>}</tr>)}</tbody></table>{records.length === 0 && <p className="p-6 text-slate-400">No records found in this table.</p>}</div>
+      <div className="overflow-x-auto rounded-xl border border-white/10 bg-slate-900/50">
+        <table className="min-w-full text-left text-sm text-slate-300">
+          <thead className="border-b border-white/10 bg-slate-800/50 text-xs font-medium uppercase tracking-wider text-slate-400">
+            <tr>
+              {config.columns.map(([, label]) => <th key={label} className="whitespace-nowrap px-6 py-4">{label}</th>)}
+              {config.orderStatus && <th className="whitespace-nowrap px-6 py-4">Update status</th>}
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {records.map((record) => (
+              <tr key={record.id} className="transition-colors hover:bg-slate-800/30">
+                {config.columns.map(([path, label]) => (
+                  <td key={label} className="max-w-xs px-6 py-4">
+                    {path === '__edit' ? (
+                      <button type="button" onClick={() => editShipping(record)} className="text-sm font-medium text-emerald-400 hover:text-emerald-300">Edit</button>
+                    ) : path === 'items' ? (
+                      <OrderItemsCell items={record.items} orderTotal={record.total} />
+                    ) : path === 'tracking_link' && record.tracking_link ? (
+                      <a href={record.tracking_link} target="_blank" rel="noreferrer" className="max-w-40 truncate text-emerald-400 hover:text-emerald-300 hover:underline">Open tracking</a>
+                    ) : path === 'status' || path === 'delivery_status' ? (
+                      <span className={`inline-flex rounded-full px-2.5 py-1 text-xs font-medium ${getValue(record, path) === 'delivered' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-500/10 text-slate-400 border border-slate-500/20'}`}>
+                        {getValue(record, path)}
+                      </span>
+                    ) : (
+                      getValue(record, path)
+                    )}
+                  </td>
+                ))}
+                {config.orderStatus && (
+                  <td className="px-6 py-4">
+                    <select value={record.status || 'pending'} disabled={savingId === record.id} onChange={(event) => changeOrderStatus(record.id, event.target.value)} className="rounded-lg border border-white/10 bg-slate-900/50 px-3 py-1.5 text-sm text-slate-200 outline-none transition focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                      <option value="pending">Pending</option>
+                      <option value="confirmed">Confirmed</option>
+                      <option value="preparing">Preparing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </td>
+                )}
+              </tr>
+            ))}
+            {records.length === 0 && (
+              <tr>
+                <td colSpan={config.columns.length + (config.orderStatus ? 1 : 0)} className="px-6 py-8 text-center text-slate-500">No records found.</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     </section>
   )
 }
