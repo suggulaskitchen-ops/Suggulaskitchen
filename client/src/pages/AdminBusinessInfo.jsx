@@ -20,7 +20,6 @@ const emptyBusiness = {
   footerText: '',
   socialLinks: [],
   hero_image_1_id: '',
-  hero_image_2_id: '',
   heroImageUrl1: '',
   hero_bg_color: '#26351c'
 }

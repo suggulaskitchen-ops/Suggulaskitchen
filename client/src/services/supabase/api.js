@@ -228,8 +228,7 @@ export async function fetchBusinessInfo() {
     aboutTitle: data.aboutTitle ?? data.about_title,
     footerText: data.footerText ?? data.footer_text,
     socialLinks: data.socialLinks ?? data.social_links,
-    heroImageUrl1: galleryById.get(data.hero_image_1_id)?.image_url || '',
-    heroImageUrl2: galleryById.get(data.hero_image_2_id)?.image_url || ''
+    heroImageUrl1: galleryById.get(data.hero_image_1_id)?.image_url || ''
   }
 }
 
@@ -251,7 +250,6 @@ export async function updateBusinessInfo(payload) {
     footerText: payload.footerText || null,
     socialLinks: toArray(payload.socialLinks),
     hero_image_1_id: payload.heroImageUrl1 ? await resolveGalleryId(payload.heroImageUrl1) : payload.hero_image_1_id || null,
-    hero_image_2_id: payload.hero_image_2_id || null,
     hero_bg_color: payload.hero_bg_color || '#26351c'
   }
   const existing = await fetchBusinessInfo()
