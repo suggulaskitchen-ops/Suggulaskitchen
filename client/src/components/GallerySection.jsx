@@ -34,8 +34,18 @@ function GalleryMedia({ item }) {
         normalizedUrl.includes('youtube.com') || normalizedUrl.includes('youtu.be') ? 'youtube' : 'image'
   )
 
+  const isDirectVideo = normalizedUrl.endsWith('.mp4') || normalizedUrl.endsWith('.webm') || item.mediaType === 'video'
+
   if (!mediaUrl) {
     return <div className="flex h-[28rem] items-center justify-center bg-slate-100 text-sm text-slate-500 sm:h-[30rem]">Image unavailable</div>
+  }
+
+  if (isDirectVideo) {
+    return (
+      <div className="h-[28rem] w-full overflow-hidden bg-black sm:h-[30rem]">
+        <video src={mediaUrl} className="h-full w-full object-cover" controls playsInline loop />
+      </div>
+    )
   }
 
   if (mediaType === 'youtube') {
