@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
 function CartSidebar({ isOpen, onClose, businessInfo, cartItems, total, onRemove, onUpdateQuantity, onClearCart }) {
   const [cooldown, setCooldown] = useState(0)
@@ -98,9 +99,9 @@ function CartSidebar({ isOpen, onClose, businessInfo, cartItems, total, onRemove
                       />
                       <span>
                         I agree that my name, phone, and address will be used to process and deliver my order. Read our{' '}
-                        <a href="#/privacy" className="text-emerald-600 underline hover:text-emerald-500">
+                        <Link to="/privacy" className="text-emerald-600 underline hover:text-emerald-500">
                           Privacy Policy
-                        </a>
+                        </Link>
                         .
                       </span>
                     </label>
