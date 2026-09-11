@@ -5,9 +5,9 @@ import FallbackImage from './FallbackImage'
 function HeroSection({ businessInfo, products = [] }) {
   const navigate = useNavigate()
   
-  const defaultImageUrl = `${import.meta.env.BASE_URL}images/product.svg`
-  const heroImageUrl = businessInfo.heroImageUrl1 || products[0]?.imageUrl || defaultImageUrl
-  const categoryImageUrl = businessInfo.heroImageUrl2 || products[1]?.imageUrl || products[0]?.imageUrl || defaultImageUrl
+  const defaultImageUrl = 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=800&q=80'
+  const heroImageUrl = businessInfo.heroImageUrl1 || defaultImageUrl
+  const categoryImageUrl = businessInfo.heroImageUrl2 || products[0]?.imageUrl || defaultImageUrl
   const bgColor = businessInfo.hero_bg_color || '#26351c'
 
   const goToProducts = useCallback((e) => {
