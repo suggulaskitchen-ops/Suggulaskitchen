@@ -1,8 +1,8 @@
 import FallbackImage from './FallbackImage'
 import ProductSkeleton from './ProductSkeleton'
-import { SearchX } from 'lucide-react'
+import { SearchX, Minus, Plus } from 'lucide-react'
 
-function ProductsSection({ products, categories = [], selectedCategory = '', onSelectCategory = () => {}, onAddToCart = () => {}, loading = false }) {
+function ProductsSection({ products, categories = [], selectedCategory = '', onSelectCategory = () => {}, onAddToCart = () => {}, cartItems = [], onUpdateQuantity = () => {}, loading = false }) {
   return (
     <section id="products" className="rounded-3xl bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-7">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -38,6 +38,7 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
             const currentPrice = Number(product.currentPrice ?? product.offerPrice ?? product.price ?? 0)
             const actualPrice = Number(product.actualPrice ?? product.price ?? currentPrice)
             const hasOffer = actualPrice > currentPrice
+            const cartItem = cartItems.find((item) => item.id === product.id)
 
             return (
               <article key={product.id} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/60">
@@ -62,13 +63,33 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
                   <span className="shrink-0 rounded-full bg-white px-3 py-1">{product.veg ? 'Veg' : 'Non Veg'}</span>
                   <span className="shrink-0 rounded-full bg-white px-3 py-1">{product.preparationTime || 0} min</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onAddToCart(product)}
-                  className="mt-auto inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#4d9f16] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#39800c]"
-                >
-                  Add to cart
-                </button>
+                {cartItem ? (
+                  <div className="mt-auto flex min-h-11 w-full items-center justify-between rounded-xl border border-slate-200 bg-white p-1">
+                    <button
+                      type="button"
+                      onClick={() => onUpdateQuantity(product.id, -1)}
+                      className="flex h-9 w-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="w-8 text-center text-sm font-semibold text-slate-900">{cartItem.quantity}</span>
+                    <button
+                      type="button"
+                      onClick={() => onUpdateQuantity(product.id, 1)}
+                      className="flex h-9 w-10 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onAddToCart(product)}
+                    className="mt-auto inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-[#4d9f16] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#39800c] active:scale-[0.98]"
+                  >
+                    Add to cart
+                  </button>
+                )}
               </article>
             )
           })

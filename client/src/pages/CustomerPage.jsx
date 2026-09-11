@@ -50,7 +50,7 @@ function CustomerPage() {
       prev
         .map((item) =>
           item.id === productId
-            ? { ...item, quantity: Math.max(1, item.quantity + delta) }
+            ? { ...item, quantity: Math.max(0, item.quantity + delta) }
             : item
         )
         .filter((item) => item.quantity > 0)
@@ -163,6 +163,8 @@ function CustomerPage() {
               selectedCategory={selectedCategory}
               onSelectCategory={handleSelectCategory}
               onAddToCart={handleAddToCart}
+              cartItems={cartItems}
+              onUpdateQuantity={handleUpdateQuantity}
               loading={loading}
             />
             <GallerySection items={appData.gallery || []} />
