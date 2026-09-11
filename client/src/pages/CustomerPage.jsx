@@ -17,7 +17,14 @@ function CustomerPage() {
   useFetchAppData()
 
   const [selectedCategory, setSelectedCategory] = useState('')
-  const [cartItems, setCartItems] = useState([])
+  const [cartItems, setCartItems] = useState(() => {
+    try {
+      const saved = localStorage.getItem('suggula_cart')
+      return saved ? JSON.parse(saved) : []
+    } catch {
+      return []
+    }
+  })
   const [cartOpen, setCartOpen] = useState(false)
   const [navbarContainer, setNavbarContainer] = useState(null)
   const [searchQuery, setSearchQuery] = useState('')
@@ -26,6 +33,10 @@ function CustomerPage() {
   useEffect(() => {
     setNavbarContainer(document.getElementById('navbar-actions'))
   }, [])
+
+  useEffect(() => {
+    localStorage.setItem('suggula_cart', JSON.stringify(cartItems))
+  }, [cartItems])
 
   useEffect(() => {
     setCartOpen(false)
