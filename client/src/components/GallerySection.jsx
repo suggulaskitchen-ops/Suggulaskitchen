@@ -55,9 +55,19 @@ function GalleryMedia({ item }) {
 
   if (mediaType === 'instagram') {
     const embedUrl = getInstagramEmbedUrl(mediaUrl)
+    // CSS hack to crop out the Instagram header (~54px) and footer (~80px)
     return embedUrl ? (
-      <div className="h-[28rem] w-full overflow-hidden bg-white sm:h-[30rem]">
-        <iframe title={item.title} src={embedUrl} className="h-full w-full border-0" scrolling="no" allow="autoplay; encrypted-media" allowFullScreen loading="lazy" />
+      <div className="relative h-[28rem] w-full overflow-hidden bg-[#fafafa] sm:h-[30rem]">
+        <iframe 
+          title={item.title} 
+          src={embedUrl} 
+          className="absolute border-0" 
+          style={{ width: 'calc(100% + 4px)', height: 'calc(100% + 140px)', top: '-55px', left: '-2px' }}
+          scrolling="no" 
+          allow="autoplay; encrypted-media" 
+          allowFullScreen 
+          loading="lazy" 
+        />
       </div>
     ) : (
       <a href={mediaUrl} target="_blank" rel="noreferrer" className="flex h-64 flex-col items-center justify-center gap-3 bg-[#26351c] p-6 text-center text-white transition hover:bg-[#354a24]">
