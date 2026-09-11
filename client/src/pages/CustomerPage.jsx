@@ -146,16 +146,16 @@ function CustomerPage() {
           </div>
         </div>
 
-        {loading && <p className="border-y border-[#d8cebd] py-5 text-center text-sm text-[#6f6b60]">Preparing today’s menu...</p>}
         {error && <p className="border-y border-red-200 bg-red-50 py-5 text-center text-sm text-red-700">We’re refreshing the kitchen board. Please try again shortly.</p>}
 
-        {!loading && !error && (
+        {!error && (
           <div className="space-y-7 sm:space-y-8">
             <AboutSection businessInfo={appData.businessInfo || {}} />
             <CategoriesSection
               categories={categories}
               selectedCategory={selectedCategory}
               onSelectCategory={handleSelectCategory}
+              loading={loading}
             />
             <ProductsSection
               products={filteredProducts}
@@ -163,6 +163,7 @@ function CustomerPage() {
               selectedCategory={selectedCategory}
               onSelectCategory={handleSelectCategory}
               onAddToCart={handleAddToCart}
+              loading={loading}
             />
             <GallerySection items={appData.gallery || []} />
           </div>

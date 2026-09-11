@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ExternalLink } from 'lucide-react'
+import FallbackImage from './FallbackImage'
 
 function getYouTubeEmbedUrl(url) {
   try {
@@ -74,7 +75,11 @@ function GalleryMedia({ item }) {
     )
   }
 
-  return <div className="h-[28rem] w-full overflow-hidden bg-slate-100 sm:h-[30rem]"><img src={mediaUrl} alt={item.title} className="block h-full w-full object-cover" onError={() => setImageFailed(true)} /></div>
+  return (
+    <div className="h-[28rem] w-full overflow-hidden bg-slate-100 sm:h-[30rem]">
+      <FallbackImage src={mediaUrl} alt={item.title} className="block h-full w-full object-cover" fallbackClassName="h-full" />
+    </div>
+  )
 }
 
 function GallerySection({ items }) {

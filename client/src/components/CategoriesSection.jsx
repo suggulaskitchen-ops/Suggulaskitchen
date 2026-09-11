@@ -1,4 +1,6 @@
-function CategoriesSection({ categories, onSelectCategory }) {
+import FallbackImage from './FallbackImage'
+
+function CategoriesSection({ categories, onSelectCategory, loading = false }) {
   return (
     <section id="categories" className="rounded-3xl bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-7">
       <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
@@ -9,11 +11,20 @@ function CategoriesSection({ categories, onSelectCategory }) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-        {categories.length > 0 ? (
+        {loading ? (
+          Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="animate-pulse overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="mb-4 h-44 w-full rounded-2xl bg-slate-200" />
+              <div className="h-6 w-1/2 rounded bg-slate-200" />
+              <div className="mt-3 h-4 w-full rounded bg-slate-200" />
+              <div className="mt-5 h-11 w-full rounded-xl bg-slate-200" />
+            </div>
+          ))
+        ) : categories.length > 0 ? (
           categories.map((category) => (
             <article key={category.id} className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/60">
               <button type="button" onClick={() => onSelectCategory(category.name)} className="mb-4 block h-44 w-full overflow-hidden rounded-2xl bg-slate-100" aria-label={`Show ${category.name} products`}>
-                <img src={category.imageUrl} alt={category.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                <FallbackImage src={category.imageUrl} alt={category.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" fallbackClassName="h-full" />
               </button>
               <div className="flex items-center justify-between gap-4">
                 <div>

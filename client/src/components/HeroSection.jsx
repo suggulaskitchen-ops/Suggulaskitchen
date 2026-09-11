@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FallbackImage from './FallbackImage'
 
 function HeroSection({ businessInfo, products = [] }) {
   const navigate = useNavigate()
@@ -46,10 +47,11 @@ function HeroSection({ businessInfo, products = [] }) {
         <div className="h-64 w-full sm:h-72 lg:w-[420px] lg:shrink-0">
           <div className="h-full w-full overflow-hidden rounded-[1.75rem] bg-white/10 p-3 backdrop-blur-sm">
             <div className="relative h-full w-full overflow-hidden rounded-[1.35rem] shadow-inner shadow-black/10">
-              <img 
+              <FallbackImage 
                 src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=800&q=80" 
                 alt="Delicious homemade food" 
                 className="h-full w-full object-cover" 
+                fallbackClassName="h-full"
               />
             </div>
           </div>

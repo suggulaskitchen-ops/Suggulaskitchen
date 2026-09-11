@@ -1,4 +1,8 @@
-function ProductsSection({ products, categories = [], selectedCategory = '', onSelectCategory = () => {}, onAddToCart = () => {} }) {
+import FallbackImage from './FallbackImage'
+import ProductSkeleton from './ProductSkeleton'
+import { SearchX } from 'lucide-react'
+
+function ProductsSection({ products, categories = [], selectedCategory = '', onSelectCategory = () => {}, onAddToCart = () => {}, loading = false }) {
   return (
     <section id="products" className="rounded-3xl bg-white p-5 shadow-sm shadow-slate-200/70 sm:p-7">
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -27,7 +31,9 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
         ))}
       </div>
       <div className="grid items-stretch gap-4 auto-rows-fr sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
-        {products.length > 0 ? (
+        {loading ? (
+          Array.from({ length: 8 }).map((_, i) => <ProductSkeleton key={i} />)
+        ) : products.length > 0 ? (
           products.map((product) => {
             const currentPrice = Number(product.currentPrice ?? product.offerPrice ?? product.price ?? 0)
             const actualPrice = Number(product.actualPrice ?? product.price ?? currentPrice)
@@ -36,7 +42,7 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
             return (
               <article key={product.id} className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-200/60">
                 <div className="mb-4 overflow-hidden rounded-2xl bg-white">
-                  <img src={product.imageUrl} alt={product.name} className="h-48 w-full object-cover transition duration-500 group-hover:scale-105" />
+                  <FallbackImage src={product.imageUrl} alt={product.name} className="h-48 w-full object-cover transition duration-500 group-hover:scale-105" fallbackClassName="h-48" />
                 </div>
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
@@ -67,7 +73,11 @@ function ProductsSection({ products, categories = [], selectedCategory = '', onS
             )
           })
         ) : (
-          <p className="text-slate-500">No products found at the moment.</p>
+          <div className="col-span-full py-16 text-center">
+            <SearchX className="mx-auto mb-4 h-12 w-12 text-slate-300" />
+            <h3 className="text-lg font-medium text-slate-900">No dishes found</h3>
+            <p className="mt-1 text-slate-500">We couldn't find any dishes matching your criteria.</p>
+          </div>
         )}
       </div>
     </section>
